@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>CCH Academy</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f4c5c">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CCH Academy">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+:root{
+  --navy:#0f4c5c;
+  --navy-dark:#0a363f;
+  --teal:#17a2a0;
+  --gold:#d4a843;
+  --sand:#f7f3ea;
+  --white:#ffffff;
+  --gray:#6b7280;
+  --gray-light:#e5e7eb;
+  --red:#dc2626;
+  --green:#16a34a;
+  --shadow: 0 2px 12px rgba(15,76,92,0.12);
+  --radius: 14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; padding:0; font-family:'Segoe UI', 'Sarabun', sans-serif; background:var(--sand); color:#1f2937; -webkit-user-select:none; user-select:none;}
+input, textarea{user-select:text; -webkit-user-select:text;}
+img{ -webkit-user-drag:none; pointer-events:none;}
+button{font-family:inherit; cursor:pointer;}
+.hidden{display:none !important;}
+#app{min-height:100vh; display:flex; flex-direction:column;}
+
+/* ===== LOGIN ===== */
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%, var(--navy-dark) 100%);
+  padding:20px;
+}
+.loginBox{
+  background:var(--white); border-radius:20px; padding:36px 28px; width:100%; max-width:380px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3); text-align:center;
+}
+.loginLogo{width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--teal),var(--navy)); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:32px; color:white; font-weight:700;}
+.loginBox h1{font-size:22px; margin:0 0 4px; color:var(--navy);}
+.loginBox p.sub{color:var(--gray); font-size:13px; margin:0 0 24px;}
+.langToggle{display:flex; justify-content:center; gap:8px; margin-bottom:20px;}
+.langBtn{padding:6px 16px; border-radius:20px; border:1.5px solid var(--gray-light); background:white; font-size:13px; font-weight:600; color:var(--gray);}
+.langBtn.active{background:var(--teal); color:white; border-color:var(--teal);}
+.inputGroup{text-align:left; margin-bottom:14px;}
+.inputGroup label{display:block; font-size:12px; font-weight:600; color:var(--gray); margin-bottom:5px;}
+.inputGroup input{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:15px; outline:none; transition:.15s;}
+.inputGroup input:focus{border-color:var(--teal);}
+.btnPrimary{width:100%; padding:13px; border-radius:10px; border:none; background:var(--teal); color:white; font-size:16px; font-weight:700; margin-top:8px;}
+.btnPrimary:active{transform:scale(0.98);}
+.btnPrimary:disabled{opacity:.6;}
+.loginError{color:var(--red); font-size:13px; margin-top:10px; min-height:18px;}
+
+/* ===== TOP BAR ===== */
+#topBar{
+  background:var(--navy); color:white; padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:50; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.topBarLeft{display:flex; align-items:center; gap:10px;}
+.topBarLogo{width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--gold)); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;}
+.topBarTitle{font-size:15px; font-weight:700;}
+.topBarUser{font-size:11px; opacity:.8;}
+.topBarRight{display:flex; align-items:center; gap:8px;}
+.iconBtn{background:rgba(255,255,255,0.12); border:none; color:white; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px;}
+
+/* ===== BOTTOM NAV ===== */
+#bottomNav{
+  position:sticky; bottom:0; background:white; display:flex; border-top:1px solid var(--gray-light);
+  box-shadow:0 -2px 10px rgba(0,0,0,0.06); z-index:50;
+}
+.navBtn{flex:1; padding:9px 4px 8px; border:none; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--gray); font-size:10.5px; font-weight:600;}
+.navBtn .navIcon{font-size:19px;}
+.navBtn.active{color:var(--teal);}
+
+#mainContent{flex:1; padding:16px; padding-bottom:24px; max-width:760px; margin:0 auto; width:100%;}
+
+/* ===== CARDS / GENERIC ===== */
+.card{background:white; border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); margin-bottom:14px;}
+.sectionTitle{font-size:17px; font-weight:700; color:var(--navy); margin:0 0 14px;}
+.deptGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+@media(min-width:600px){.deptGrid{grid-template-columns:repeat(3,1fr);}}
+.deptCard{background:white; border-radius:14px; padding:18px 12px; text-align:center; box-shadow:var(--shadow); border:2px solid transparent; transition:.15s;}
+.deptCard:active{transform:scale(0.96); border-color:var(--teal);}
+.deptIcon{font-size:30px; margin-bottom:8px;}
+.deptName{font-size:13px; font-weight:700; color:var(--navy);}
+.deptCount{font-size:11px; color:var(--gray); margin-top:2px;}
+
+.courseRow{display:flex; align-items:center; gap:12px; padding:14px 10px; border-radius:12px; background:white; box-shadow:var(--shadow); margin-bottom:10px;}
+.courseCheck{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; font-weight:700;}
+.courseCheck.done{background:var(--green); color:white;}
+.courseCheck.pending{background:var(--gray-light); color:var(--gray);}
+.courseInfo{flex:1; min-width:0;}
+.courseTitle{font-size:14px; font-weight:700; color:#1f2937; margin-bottom:3px;}
+.courseMeta{font-size:11.5px; color:var(--gray);}
+.courseArrow{color:var(--gray-light); font-size:18px;}
+.progressBarOuter{height:5px; background:var(--gray-light); border-radius:3px; margin-top:6px; overflow:hidden;}
+.progressBarInner{height:100%; background:var(--teal); border-radius:3px; transition:width .3s;}
+
+.btn{padding:10px 18px; border-radius:10px; border:none; font-weight:700; font-size:14px;}
+.btn-teal{background:var(--teal); color:white;}
+.btn-gold{background:var(--gold); color:white;}
+.btn-gray{background:var(--gray-light); color:#374151;}
+.btn-red{background:var(--red); color:white;}
+.btn-outline{background:white; border:1.5px solid var(--teal); color:var(--teal);}
+.btn-block{width:100%;}
+.btn:disabled{opacity:.5;}
+
+.backBtn{display:flex; align-items:center; gap:6px; color:var(--teal); font-weight:700; font-size:14px; margin-bottom:14px; background:none; border:none; padding:0;}
+
+.loadingWrap{display:flex; flex-direction:column; align-items:center; padding:50px 20px; color:var(--gray);}
+.spinner{width:34px; height:34px; border:3px solid var(--gray-light); border-top-color:var(--teal); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.toast{position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#1f2937; color:white; padding:12px 20px; border-radius:30px; font-size:13px; font-weight:600; z-index:200; box-shadow:0 4px 16px rgba(0,0,0,0.25); max-width:90%; text-align:center;}
+
+/* ===== MODAL ===== */
+.modalOverlay{position:fixed; inset:0; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:300; padding:20px;}
+.modalBox{background:white; border-radius:18px; padding:24px; max-width:420px; width:100%; max-height:88vh; overflow-y:auto;}
+.modalBox.danger{border-top:8px solid var(--red);}
+.modalIcon{font-size:42px; text-align:center; margin-bottom:10px;}
+.modalTitle{font-size:18px; font-weight:800; text-align:center; margin-bottom:8px;}
+.modalTitle.danger{color:var(--red);}
+.modalText{font-size:14px; color:#374151; text-align:center; line-height:1.6; margin-bottom:18px;}
+.modalActions{display:flex; gap:10px;}
+.modalActions .btn{flex:1;}
+
+/* ===== VIDEO PLAYER ===== */
+.videoWrap{position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; margin-bottom:14px;}
+.videoWrap iframe{width:100%; height:100%; border:none;}
+.watchStats{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--gray); margin-bottom:10px;}
+
+/* ===== EXAM ===== */
+.examHeader{display:flex; justify-content:space-between; align-items:center; background:var(--navy); color:white; padding:14px 16px; border-radius:14px; margin-bottom:16px;}
+.timerBox{background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:20px; font-weight:800; font-size:16px; font-variant-numeric:tabular-nums;}
+.timerBox.warn{background:var(--red); animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.qProgress{font-size:12px; opacity:.85;}
+.questionCard{background:white; border-radius:16px; padding:20px; box-shadow:var(--shadow);}
+.questionText{font-size:16px; font-weight:700; color:#1f2937; margin-bottom:18px; line-height:1.5;}
+.choiceBtn{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--gray-light); background:white; font-size:14px; margin-bottom:10px; font-weight:500;}
+.choiceBtn.selected{border-color:var(--teal); background:#e6f7f7; font-weight:700;}
+.choiceBtn.correct{border-color:var(--green); background:#e9f9ee;}
+.choiceBtn.wrong{border-color:var(--red); background:#fdecec;}
+
+/* ===== HISTORY ===== */
+.statGrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;}
+.statBox{background:white; border-radius:14px; padding:14px 8px; text-align:center; box-shadow:var(--shadow);}
+.statNum{font-size:22px; font-weight:800; color:var(--navy);}
+.statLabel{font-size:10.5px; color:var(--gray); margin-top:2px;}
+.historyRow{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:white; border-radius:12px; box-shadow:var(--shadow); margin-bottom:8px;}
+.historyRow .hLeft{flex:1; min-width:0;}
+.historyRow .hTitle{font-size:13.5px; font-weight:700; color:#1f2937;}
+.historyRow .hMeta{font-size:11px; color:var(--gray); margin-top:2px;}
+.badge{font-size:10.5px; font-weight:800; padding:4px 9px; border-radius:20px; white-space:nowrap;}
+.badge.pass{background:#dcfce7; color:var(--green);}
+.badge.fail{background:#fee2e2; color:var(--red);}
+.badge.progress{background:#fef3c7; color:#b45309;}
+
+/* ===== ADMIN ===== */
+.adminTabs{display:flex; gap:6px; overflow-x:auto; margin-bottom:16px; padding-bottom:4px;}
+.adminTab{flex-shrink:0; padding:8px 14px; border-radius:20px; border:1.5px solid var(--gray-light); background:white; font-size:12.5px; font-weight:700; color:var(--gray); white-space:nowrap;}
+.adminTab.active{background:var(--navy); color:white; border-color:var(--navy);}
+.dataTable{width:100%; border-collapse:collapse; font-size:12.5px;}
+.dataTable th{background:var(--sand); padding:8px 6px; text-align:left; font-weight:700; color:var(--navy); position:sticky; top:0;}
+.dataTable td{padding:8px 6px; border-bottom:1px solid var(--gray-light);}
+.tableWrap{overflow-x:auto; border-radius:12px; box-shadow:var(--shadow); background:white;}
+.formGrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.formGrid .full{grid-column:1/-1;}
+.miniBtn{padding:6px 10px; border-radius:8px; border:none; font-size:11.5px; font-weight:700;}
+
+select{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:14px; background:white;}
+textarea{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:14px; resize:vertical; min-height:70px;}
+
+.cheatTag{display:inline-block; background:var(--red); color:white; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
+    <div class="loginBox">
+      <div class="loginLogo">CCH</div>
+      <h1 id="loginTitle">CCH Academy</h1>
+      <p class="sub" id="loginSub">ระบบอบรมออนไลน์พนักงานโรงแรม</p>
+      <div class="langToggle">
+        <button class="langBtn active" id="langTH" onclick="setLang('th')">ไทย</button>
+        <button class="langBtn" id="langEN" onclick="setLang('en')">English</button>
+      </div>
+      <div class="inputGroup">
+        <label id="lblUser">ชื่อผู้ใช้</label>
+        <input type="text" id="loginUser" autocomplete="username" placeholder="CCH">
+      </div>
+      <div class="inputGroup">
+        <label id="lblPass">รหัสผ่าน</label>
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="••••">
+      </div>
+      <button class="btnPrimary" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+      <div class="loginError" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (after login) -->
+  <div id="mainApp" class="hidden">
+    <div id="topBar">
+      <div class="topBarLeft">
+        <div class="topBarLogo">CCH</div>
+        <div>
+          <div class="topBarTitle">CCH Academy</div>
+          <div class="topBarUser" id="topBarUserName">-</div>
+        </div>
+      </div>
+      <div class="topBarRight">
+        <button class="iconBtn" onclick="toggleLangMenu()" title="Language">🌐</button>
+        <button class="iconBtn" onclick="doLogout()" title="Logout">⏻</button>
+      </div>
+    </div>
+
+    <div id="mainContent"></div>
+
+    <div id="bottomNav">
+      <button class="navBtn active" id="navLessons" onclick="goPage('lessons')">
+        <span class="navIcon">📚</span><span data-i="nav_lessons">บทเรียน</span>
+      </button>
+      <button class="navBtn" id="navHistory" onclick="goPage('history')">
+        <span class="navIcon">📊</span><span data-i="nav_history">ประวัติ</span>
+      </button>
+      <button class="navBtn hidden" id="navAdmin" onclick="goPage('admin')">
+        <span class="navIcon">⚙️</span><span data-i="nav_admin">ผู้ดูแล</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============== FIREBASE INIT ============== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCwlbdLuU_fqTEvnepQa6QBIYbUNGZaxVs",
+  authDomain: "cch-academy.firebaseapp.com",
+  databaseURL: "https://cch-academy-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cch-academy",
+  storageBucket: "cch-academy.firebasestorage.app",
+  messagingSenderId: "325758871984",
+  appId: "1:325758871984:web:d92eba2924003d17dcce75"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+<script src="app.js"></script>
+</body>
+</html>

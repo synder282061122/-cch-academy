@@ -1,0 +1,1557 @@
+/* ====================================================================
+   CCH ACADEMY - app.js
+   ==================================================================== */
+
+/* ---------------- I18N ---------------- */
+const I18N = {
+  th:{
+    app_name:"CCH Academy",
+    login_sub:"ระบบอบรมออนไลน์พนักงานโรงแรม",
+    lbl_user:"ชื่อผู้ใช้", lbl_pass:"รหัสผ่าน", login_btn:"เข้าสู่ระบบ",
+    err_login:"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+    err_inactive:"บัญชีนี้ถูกระงับ กรุณาติดต่อฝ่ายบุคคล",
+    nav_lessons:"บทเรียน", nav_history:"ประวัติ", nav_admin:"ผู้ดูแล",
+    select_dept:"เลือกแผนกที่ต้องการเรียน",
+    courses_count:"คอร์ส",
+    back:"ย้อนกลับ",
+    completed:"เรียนจบแล้ว", in_progress:"กำลังเรียน", not_started:"ยังไม่เริ่ม",
+    watch_video:"ดูวิดีโอ",
+    take_exam:"ทำแบบทดสอบ",
+    exam_locked:"ดูวิดีโอให้ครบ 60% ก่อนทำแบบทดสอบ",
+    progress_pct:"ความคืบหน้า",
+    start_exam:"เริ่มทำแบบทดสอบ",
+    exam_instructions:"คำแนะนำการสอบ",
+    exam_rule1:"มีทั้งหมด 10 ข้อ ข้อละ 20 วินาที",
+    exam_rule2:"ต้องตอบให้ครบทุกข้อ ข้ามไม่ได้",
+    exam_rule3:"ห้ามสลับแท็บหรือออกจากหน้าจอ ระบบจะตรวจจับทันที",
+    exam_rule4:"ต้องได้คะแนน 80% ขึ้นไปจึงจะผ่าน",
+    exam_rule5:"หากไม่ผ่านเกิน 2 ครั้ง ต้องดูวิดีโอใหม่ตั้งแต่ต้น",
+    begin:"เริ่มสอบ", cancel:"ยกเลิก",
+    question:"ข้อที่",
+    submit_exam:"ส่งคำตอบ",
+    confirm_submit:"ยืนยันส่งคำตอบ?",
+    confirm_submit_text:"เมื่อส่งแล้วจะไม่สามารถแก้ไขได้",
+    yes_submit:"ส่งคำตอบ", no_back:"กลับไปทำต่อ",
+    exam_result:"ผลการสอบ",
+    your_score:"คะแนนของคุณ",
+    pass:"ผ่าน", fail:"ไม่ผ่าน",
+    try_again:"ทำใหม่อีกครั้ง", back_lessons:"กลับสู่บทเรียน",
+    tab_warning_title:"⚠️ ตรวจพบการสลับหน้าจอ",
+    tab_warning_text:"ระบบตรวจพบว่าคุณออกจากหน้าสอบ การกระทำนี้ถือเป็นพฤติกรรมต้องสงสัย หากเกิดขึ้นอีกครั้ง ระบบจะปรับตกทันทีและบันทึกพฤติกรรมทุจริต",
+    ack:"รับทราบ",
+    cheat_title:"🚫 ตรวจพบพฤติกรรมทุจริต",
+    cheat_text:"คุณสลับหน้าจอระหว่างสอบซ้ำอีกครั้ง ระบบจะปรับผลเป็น \"ไม่ผ่าน\" ทันที และบันทึกพฤติกรรมนี้ในระบบ คุณต้องเริ่มดูวิดีโอใหม่ตั้งแต่ต้น",
+    reset_warning_title:"การเรียนของคุณถูกรีเซ็ต",
+    reset_warning_text:"คุณทำแบบทดสอบไม่ผ่านครบจำนวนครั้งที่กำหนด กรุณาดูวิดีโอใหม่ให้ครบ 60% เพื่อทำแบบทดสอบอีกครั้ง",
+    history_title:"ประวัติการเรียนของฉัน",
+    total_required:"ต้องเรียนทั้งหมด", total_completed:"ผ่านแล้ว", total_pct:"ความสำเร็จ",
+    no_history:"ยังไม่มีประวัติการเรียน",
+    time_used:"เวลาที่ใช้สอบ", attempts:"จำนวนครั้ง", tab_switches:"สลับหน้าจอ",
+    admin_title:"แผงควบคุมผู้ดูแลระบบ",
+    tab_staff:"พนักงาน", tab_courses:"คอร์สเรียน", tab_questions:"คลังข้อสอบ", tab_logs:"บันทึกพฤติกรรม", tab_settings:"ตั้งค่า",
+    add_staff:"เพิ่มพนักงาน", edit:"แก้ไข", delete:"ลบ",
+    name_th:"ชื่อ (ไทย)", name_en:"ชื่อ (อังกฤษ)", username:"ชื่อผู้ใช้", password:"รหัสผ่าน",
+    department:"แผนก", level:"เลเวล", role:"สิทธิ์",
+    save:"บันทึก", confirm_delete:"ยืนยันการลบ?", confirm_delete_text:"การลบไม่สามารถย้อนกลับได้",
+    sync_sheet:"ซิงค์จาก Google Sheet", sync_url:"วาง Web App URL ของ Apps Script",
+    syncing:"กำลังซิงค์ข้อมูล...", sync_done:"ซิงค์ข้อมูลสำเร็จ",
+    add_dept:"เพิ่มแผนก", dept_icon:"ไอคอน (emoji)",
+    add_course:"เพิ่มคอร์ส", course_title_th:"ชื่อคอร์ส (ไทย)", course_title_en:"ชื่อคอร์ส (อังกฤษ)",
+    drive_id:"Google Drive File ID", duration:"ความยาว (วินาที)",
+    add_question:"เพิ่มคำถาม", question_type:"ประเภทคำถาม",
+    type_mc:"เลือกตอบ", type_tf:"ถูก/ผิด",
+    question_th:"คำถาม (ไทย)", question_en:"คำถาม (อังกฤษ)",
+    choice:"ตัวเลือก", correct_answer:"คำตอบที่ถูก",
+    select_course:"เลือกคอร์ส",
+    cheat_log_title:"บันทึกพฤติกรรมการสอบ",
+    no_logs:"ยังไม่มีบันทึก",
+    dashboard_overview:"ภาพรวมระบบ",
+    total_staff:"พนักงานทั้งหมด", total_courses:"คอร์สทั้งหมด", total_exams:"สอบไปแล้ว", cheat_count:"พบทุจริต",
+    saving:"กำลังบันทึก...",
+    field_required:"กรุณากรอกข้อมูลให้ครบ",
+    pass_min_len:"รหัสผ่านต้องมีตัวเลขและตัวอักษรรวมกันอย่างน้อย 4 ตัว",
+    select_lang:"เลือกภาษา",
+    close:"ปิด",
+    none:"-",
+    all_depts:"ทุกแผนก",
+    staff_role:"พนักงาน", admin_role:"ผู้ดูแลระบบ",
+    no_courses_dept:"ยังไม่มีคอร์สในแผนกนี้",
+    video_progress_note:"ระบบจะบันทึกเวลาเรียนอัตโนมัติ",
+    exam_passed_badge:"ผ่านแล้ว",
+    manage_required:"กำหนดวิชาบังคับ",
+    required_for:"บังคับสำหรับแผนก/เลเวล",
+    active:"ใช้งาน", inactive:"ปิดใช้งาน",
+    confirm:"ยืนยัน"
+  },
+  en:{
+    app_name:"CCH Academy",
+    login_sub:"Hotel Staff Online Training System",
+    lbl_user:"Username", lbl_pass:"Password", login_btn:"Login",
+    err_login:"Invalid username or password",
+    err_inactive:"This account is disabled. Please contact HR.",
+    nav_lessons:"Lessons", nav_history:"History", nav_admin:"Admin",
+    select_dept:"Select a department to learn",
+    courses_count:"courses",
+    back:"Back",
+    completed:"Completed", in_progress:"In Progress", not_started:"Not Started",
+    watch_video:"Watch Video",
+    take_exam:"Take Exam",
+    exam_locked:"Watch at least 60% of the video to unlock the exam",
+    progress_pct:"Progress",
+    start_exam:"Start Exam",
+    exam_instructions:"Exam Instructions",
+    exam_rule1:"10 questions total, 20 seconds each",
+    exam_rule2:"You must answer all questions, no skipping",
+    exam_rule3:"Do not switch tabs or leave the screen — detected instantly",
+    exam_rule4:"You need 80% or higher to pass",
+    exam_rule5:"Fail more than 2 times and you must re-watch the video from the start",
+    begin:"Begin Exam", cancel:"Cancel",
+    question:"Question",
+    submit_exam:"Submit",
+    confirm_submit:"Confirm submission?",
+    confirm_submit_text:"You cannot change your answers after submitting",
+    yes_submit:"Submit", no_back:"Go Back",
+    exam_result:"Exam Result",
+    your_score:"Your Score",
+    pass:"Pass", fail:"Fail",
+    try_again:"Try Again", back_lessons:"Back to Lessons",
+    tab_warning_title:"⚠️ Tab Switch Detected",
+    tab_warning_text:"You left the exam screen. This is flagged as suspicious. Doing this again will result in an automatic fail and a cheating record.",
+    ack:"Acknowledge",
+    cheat_title:"🚫 Cheating Detected",
+    cheat_text:"You switched tabs again during the exam. Your result is now marked as FAIL and this behavior has been logged. You must re-watch the video from the beginning.",
+    reset_warning_title:"Your Progress Has Been Reset",
+    reset_warning_text:"You failed the exam too many times. Please re-watch at least 60% of the video to retake the exam.",
+    history_title:"My Learning History",
+    total_required:"Required", total_completed:"Completed", total_pct:"Success Rate",
+    no_history:"No learning history yet",
+    time_used:"Time Used", attempts:"Attempts", tab_switches:"Tab Switches",
+    admin_title:"Admin Dashboard",
+    tab_staff:"Staff", tab_courses:"Courses", tab_questions:"Question Bank", tab_logs:"Behavior Logs", tab_settings:"Settings",
+    add_staff:"Add Staff", edit:"Edit", delete:"Delete",
+    name_th:"Name (Thai)", name_en:"Name (English)", username:"Username", password:"Password",
+    department:"Department", level:"Level", role:"Role",
+    save:"Save", confirm_delete:"Confirm Delete?", confirm_delete_text:"This action cannot be undone",
+    sync_sheet:"Sync from Google Sheet", sync_url:"Paste Apps Script Web App URL",
+    syncing:"Syncing data...", sync_done:"Sync complete",
+    add_dept:"Add Department", dept_icon:"Icon (emoji)",
+    add_course:"Add Course", course_title_th:"Course Title (Thai)", course_title_en:"Course Title (English)",
+    drive_id:"Google Drive File ID", duration:"Duration (seconds)",
+    add_question:"Add Question", question_type:"Question Type",
+    type_mc:"Multiple Choice", type_tf:"True/False",
+    question_th:"Question (Thai)", question_en:"Question (English)",
+    choice:"Choice", correct_answer:"Correct Answer",
+    select_course:"Select Course",
+    cheat_log_title:"Exam Behavior Log",
+    no_logs:"No logs yet",
+    dashboard_overview:"System Overview",
+    total_staff:"Total Staff", total_courses:"Total Courses", total_exams:"Exams Taken", cheat_count:"Cheating Detected",
+    saving:"Saving...",
+    field_required:"Please fill in all fields",
+    pass_min_len:"Password must have at least 4 chars, letters + numbers",
+    select_lang:"Select Language",
+    close:"Close",
+    none:"-",
+    all_depts:"All Departments",
+    staff_role:"Staff", admin_role:"Administrator",
+    no_courses_dept:"No courses in this department yet",
+    video_progress_note:"Your watch time is recorded automatically",
+    exam_passed_badge:"Passed",
+    manage_required:"Manage Required Courses",
+    required_for:"Required for Dept/Level",
+    active:"Active", inactive:"Inactive",
+    confirm:"Confirm"
+  }
+};
+let LANG = localStorage.getItem('cch_lang') || 'th';
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+/* ---------------- GLOBAL STATE ---------------- */
+const STATE = {
+  user: null,
+  page: 'lessons',
+  departments: {},
+  courses: {},
+  questionBanks: {},
+  progress: {},
+  users: {},
+  examLogs: {},
+  cheatLog: {},
+  currentDept: null,
+  currentCourse: null,
+  examSession: null,
+  listenersAttached: false
+};
+
+const SESSION_KEY = 'cch_session_user';
+
+/* ---------------- UTIL ---------------- */
+function showToast(msg, ms=2600){
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), ms);
+}
+function escapeHtml(str){
+  if(str===undefined||str===null) return '';
+  return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function fmtTime(sec){
+  sec = Math.floor(sec||0);
+  const m = Math.floor(sec/60), s = sec%60;
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+function fmtDate(ts){
+  if(!ts) return '-';
+  const d = new Date(ts);
+  return d.toLocaleDateString(LANG==='th'?'th-TH':'en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}) + ' ' +
+         d.toLocaleTimeString(LANG==='th'?'th-TH':'en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+
+/* ---------------- LANGUAGE ---------------- */
+function setLang(lang){
+  LANG = lang;
+  localStorage.setItem('cch_lang', lang);
+  document.getElementById('langTH').classList.toggle('active', lang==='th');
+  document.getElementById('langEN').classList.toggle('active', lang==='en');
+  document.documentElement.lang = lang;
+  applyStaticTranslations();
+  if(STATE.user){ renderPage(); }
+}
+function applyStaticTranslations(){
+  document.getElementById('loginTitle').textContent = t('app_name');
+  document.getElementById('loginSub').textContent = t('login_sub');
+  document.getElementById('lblUser').textContent = t('lbl_user');
+  document.getElementById('lblPass').textContent = t('lbl_pass');
+  document.getElementById('loginBtn').textContent = t('login_btn');
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    el.textContent = t(el.getAttribute('data-i'));
+  });
+}
+
+function toggleLangMenu(){
+  setLang(LANG === 'th' ? 'en' : 'th');
+  showToast(LANG==='th' ? 'เปลี่ยนเป็นภาษาไทย' : 'Switched to English', 1500);
+}
+
+/* ---------------- AUTH ---------------- */
+function doLogin(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.textContent = '';
+  if(!u || !p){ errEl.textContent = t('field_required'); return; }
+
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+
+  db.ref('users/'+u).once('value').then(snap=>{
+    btn.disabled = false;
+    const userData = snap.val();
+    if(!userData || userData.password !== p){
+      errEl.textContent = t('err_login');
+      return;
+    }
+    if(userData.active === false){
+      errEl.textContent = t('err_inactive');
+      return;
+    }
+    userData.username = u;
+    STATE.user = userData;
+    localStorage.setItem(SESSION_KEY, u);
+    enterApp();
+  }).catch(err=>{
+    btn.disabled = false;
+    errEl.textContent = t('err_login');
+    console.error(err);
+  });
+}
+
+function doLogout(){
+  detachExamGuards();
+  localStorage.removeItem(SESSION_KEY);
+  STATE.user = null;
+  STATE.page = 'lessons';
+  document.getElementById('mainApp').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function tryAutoLogin(){
+  const saved = localStorage.getItem(SESSION_KEY);
+  if(!saved) return;
+  db.ref('users/'+saved).once('value').then(snap=>{
+    const userData = snap.val();
+    if(userData && userData.active !== false){
+      userData.username = saved;
+      STATE.user = userData;
+      enterApp();
+    }
+  });
+}
+
+function enterApp(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('topBarUserName').textContent = LANG==='th' ? STATE.user.nameTH : STATE.user.nameEN;
+  document.getElementById('navAdmin').classList.toggle('hidden', STATE.user.role !== 'admin');
+  attachGlobalListeners();
+  goPage('lessons');
+}
+
+/* init lang buttons + auto login on load */
+document.addEventListener('DOMContentLoaded', ()=>{
+  setLang(LANG);
+  tryAutoLogin();
+});
+
+/* ====================================================================
+   FIREBASE REALTIME LISTENERS
+   ==================================================================== */
+function attachGlobalListeners(){
+  if(STATE.listenersAttached) return;
+  STATE.listenersAttached = true;
+
+  db.ref('departments').on('value', snap=>{
+    STATE.departments = snap.val() || {};
+    if(STATE.page==='lessons') renderPage();
+  });
+  db.ref('courses').on('value', snap=>{
+    STATE.courses = snap.val() || {};
+    if(['lessons','admin'].includes(STATE.page)) renderPage();
+  });
+  db.ref('questionBanks').on('value', snap=>{
+    STATE.questionBanks = snap.val() || {};
+  });
+  db.ref('progress/'+STATE.user.username).on('value', snap=>{
+    STATE.progress[STATE.user.username] = snap.val() || {};
+    if(['lessons','history'].includes(STATE.page)) renderPage();
+  });
+  db.ref('examLogs/'+STATE.user.username).on('value', snap=>{
+    STATE.examLogs[STATE.user.username] = snap.val() || {};
+    if(STATE.page==='history') renderPage();
+  });
+
+  if(STATE.user.role === 'admin'){
+    db.ref('users').on('value', snap=>{
+      STATE.users = snap.val() || {};
+      if(STATE.page==='admin') renderPage();
+    });
+    db.ref('cheatLog').on('value', snap=>{
+      STATE.cheatLog = snap.val() || {};
+      if(STATE.page==='admin') renderPage();
+    });
+    db.ref('progress').on('value', snap=>{
+      STATE.progress = snap.val() || {};
+      if(STATE.page==='admin') renderPage();
+    });
+    db.ref('examLogs').on('value', snap=>{
+      STATE.examLogs = snap.val() || {};
+      if(STATE.page==='admin') renderPage();
+    });
+  }
+}
+
+/* ====================================================================
+   NAVIGATION
+   ==================================================================== */
+function goPage(page){
+  STATE.page = page;
+  STATE.currentDept = null;
+  STATE.currentCourse = null;
+  document.querySelectorAll('.navBtn').forEach(b=>b.classList.remove('active'));
+  const map = {lessons:'navLessons', history:'navHistory', admin:'navAdmin'};
+  if(map[page]) document.getElementById(map[page]).classList.add('active');
+  renderPage();
+}
+
+function renderPage(){
+  const c = document.getElementById('mainContent');
+  if(!STATE.user){ return; }
+  if(STATE.page === 'lessons') return renderLessonsPage(c);
+  if(STATE.page === 'history') return renderHistoryPage(c);
+  if(STATE.page === 'admin') return renderAdminPage(c);
+}
+
+/* ====================================================================
+   LESSONS PAGE — Department Grid -> Course List -> Course Detail
+   ==================================================================== */
+function renderLessonsPage(c){
+  if(STATE.currentCourse){ return renderCourseDetail(c); }
+  if(STATE.currentDept){ return renderCourseList(c); }
+  renderDeptGrid(c);
+}
+
+function getDeptCourses(deptId){
+  const list = STATE.courses[deptId] || {};
+  return Object.keys(list).map(id=>({id, ...list[id]})).filter(x=>x.active!==false).sort((a,b)=>(a.order||0)-(b.order||0));
+}
+
+function renderDeptGrid(c){
+  const depts = Object.keys(STATE.departments).map(id=>({id, ...STATE.departments[id]})).sort((a,b)=>(a.order||0)-(b.order||0));
+  let html = `<div class="sectionTitle">${t('select_dept')}</div><div class="deptGrid">`;
+  if(depts.length===0){
+    html += `<div class="card" style="grid-column:1/-1;text-align:center;color:var(--gray);">${t('no_courses_dept')}</div>`;
+  }
+  depts.forEach(d=>{
+    const courses = getDeptCourses(d.id);
+    html += `
+      <button class="deptCard" onclick="openDept('${d.id}')" style="border:none;">
+        <div class="deptIcon">${d.icon||'📁'}</div>
+        <div class="deptName">${escapeHtml(LANG==='th'?d.nameTH:d.nameEN)}</div>
+        <div class="deptCount">${courses.length} ${t('courses_count')}</div>
+      </button>`;
+  });
+  html += `</div>`;
+  c.innerHTML = html;
+}
+
+function openDept(deptId){
+  STATE.currentDept = deptId;
+  renderPage();
+}
+
+function renderCourseList(c){
+  const dept = STATE.departments[STATE.currentDept];
+  const courses = getDeptCourses(STATE.currentDept);
+  const myProgress = (STATE.progress[STATE.user.username]) || {};
+
+  let html = `<button class="backBtn" onclick="STATE.currentDept=null; renderPage();">‹ ${t('back')}</button>`;
+  html += `<div class="sectionTitle">${dept.icon||''} ${escapeHtml(LANG==='th'?dept.nameTH:dept.nameEN)}</div>`;
+
+  if(courses.length===0){
+    html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_courses_dept')}</div>`;
+  }
+
+  courses.forEach(course=>{
+    const p = myProgress[course.id] || {};
+    const pct = Math.min(100, Math.round(p.percent||0));
+    const examPassed = !!p.examPassed;
+    const icon = examPassed ? '✓' : (pct>0 ? pct+'%' : '–');
+    html += `
+      <div class="courseRow" onclick="openCourse('${course.id}')" style="cursor:pointer;">
+        <div class="courseCheck ${examPassed?'done':'pending'}" style="font-size:${examPassed?'15px':'11px'};">${icon}</div>
+        <div class="courseInfo">
+          <div class="courseTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+          <div class="courseMeta">${examPassed ? t('completed') : (pct>0 ? t('in_progress') : t('not_started'))}</div>
+          <div class="progressBarOuter"><div class="progressBarInner" style="width:${pct}%;"></div></div>
+        </div>
+        <div class="courseArrow">›</div>
+      </div>`;
+  });
+  c.innerHTML = html;
+}
+
+function openCourse(courseId){
+  STATE.currentCourse = courseId;
+  renderPage();
+}
+
+/* ====================================================================
+   COURSE DETAIL — Video Player + Progress Tracking
+   ==================================================================== */
+let videoPollTimer = null;
+let videoWatchSeconds = 0;
+let videoStartTimestamp = null;
+
+function findCourseObj(courseId){
+  for(const deptId in STATE.courses){
+    if(STATE.courses[deptId][courseId]) return {...STATE.courses[deptId][courseId], id:courseId, deptId};
+  }
+  return null;
+}
+
+function renderCourseDetail(c){
+  const course = findCourseObj(STATE.currentCourse);
+  if(!course){ STATE.currentCourse=null; STATE.currentDept=null; renderPage(); return; }
+
+  const myProgress = ((STATE.progress[STATE.user.username]||{})[course.id]) || {};
+  const pct = Math.min(100, Math.round(myProgress.percent||0));
+  const examUnlocked = pct >= 60;
+  const examPassed = !!myProgress.examPassed;
+  const failStreak = myProgress.failStreak || 0;
+
+  let html = `<button class="backBtn" onclick="stopVideoTracking(); STATE.currentCourse=null; renderPage();">‹ ${t('back')}</button>`;
+  html += `<div class="sectionTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>`;
+
+  html += `<div class="videoWrap" id="videoWrap">
+      <iframe id="courseVideo" src="https://drive.google.com/file/d/${course.driveFileId}/preview" allow="autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe>
+    </div>`;
+
+  html += `<div class="watchStats">
+      <span>${t('progress_pct')}: <b id="pctLabel">${pct}%</b></span>
+      <span>${t('video_progress_note')}</span>
+    </div>`;
+  html += `<div class="progressBarOuter" style="height:8px;margin-bottom:18px;"><div class="progressBarInner" id="pctBar" style="width:${pct}%;"></div></div>`;
+
+  if(examPassed){
+    html += `<div class="card" style="text-align:center;">
+      <div style="font-size:30px;">✅</div>
+      <div style="font-weight:800;color:var(--green);margin-top:6px;">${t('exam_passed_badge')}</div>
+    </div>`;
+  } else if(examUnlocked){
+    html += `<button class="btn btn-teal btn-block" onclick="openExamIntro('${course.id}')">${t('take_exam')}</button>`;
+  } else {
+    html += `<button class="btn btn-gray btn-block" disabled>${t('exam_locked')}</button>`;
+  }
+
+  c.innerHTML = html;
+  startVideoTracking(course.id, course.durationSec||600, myProgress.watchedSec||0);
+}
+
+function startVideoTracking(courseId, durationSec, alreadyWatched){
+  stopVideoTracking();
+  videoWatchSeconds = alreadyWatched || 0;
+  videoStartTimestamp = Date.now();
+
+  videoPollTimer = setInterval(()=>{
+    // Increment watched time by real elapsed seconds (capped to duration)
+    videoWatchSeconds = Math.min(durationSec, videoWatchSeconds + 1);
+    const pct = durationSec>0 ? Math.min(100, (videoWatchSeconds/durationSec)*100) : 0;
+
+    const pctBar = document.getElementById('pctBar');
+    const pctLabel = document.getElementById('pctLabel');
+    if(pctBar) pctBar.style.width = pct+'%';
+    if(pctLabel) pctLabel.textContent = Math.round(pct)+'%';
+
+    // push to Firebase every 5s to respect rate limits, not every second
+    if(videoWatchSeconds % 5 === 0 || pct>=60){
+      saveVideoProgress(courseId, videoWatchSeconds, pct);
+    }
+    if(pct>=60){
+      // unlock exam button live without full re-render spam
+      const detail = document.querySelector('#mainContent');
+      if(detail && !detail.querySelector('.btn-teal[onclick*="openExamIntro"]') && STATE.currentCourse===courseId){
+        renderPage();
+      }
+    }
+  }, 1000);
+}
+
+function stopVideoTracking(){
+  if(videoPollTimer){ clearInterval(videoPollTimer); videoPollTimer=null; }
+}
+
+function saveVideoProgress(courseId, watchedSec, pct){
+  const ref = db.ref(`progress/${STATE.user.username}/${courseId}`);
+  ref.update({
+    watchedSec: Math.round(watchedSec),
+    percent: Math.round(pct*10)/10,
+    completed: pct>=60,
+    lastUpdated: firebase.database.ServerValue.TIMESTAMP
+  });
+}
+
+function resetCourseProgress(courseId, reason){
+  const ref = db.ref(`progress/${STATE.user.username}/${courseId}`);
+  ref.update({
+    watchedSec: 0,
+    percent: 0,
+    completed: false,
+    lastUpdated: firebase.database.ServerValue.TIMESTAMP
+  });
+  videoWatchSeconds = 0;
+}
+
+/* ====================================================================
+   EXAM ENGINE
+   ==================================================================== */
+function openExamIntro(courseId){
+  const course = findCourseObj(courseId);
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'examIntroModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalIcon">📝</div>
+      <div class="modalTitle">${t('exam_instructions')}</div>
+      <div class="modalText" style="text-align:left;">
+        • ${t('exam_rule1')}<br>
+        • ${t('exam_rule2')}<br>
+        • ${t('exam_rule3')}<br>
+        • ${t('exam_rule4')}<br>
+        • ${t('exam_rule5')}
+      </div>
+      <div class="modalActions">
+        <button class="btn btn-gray" onclick="document.getElementById('examIntroModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-teal" onclick="document.getElementById('examIntroModal').remove(); startExam('${courseId}')">${t('begin')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function shuffleArray(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startExam(courseId){
+  const bank = STATE.questionBanks[courseId] || {};
+  let allQ = Object.keys(bank).map(id=>({id, ...bank[id]}));
+  if(allQ.length === 0){
+    showToast(LANG==='th'?'ยังไม่มีคำถามในคอร์สนี้':'No questions available for this course');
+    return;
+  }
+  const picked = shuffleArray(allQ).slice(0, Math.min(10, allQ.length));
+  // shuffle choices per question, track new correct index
+  const questions = picked.map(q=>{
+    if(q.type === 'truefalse'){
+      return {...q, choicesShuffled: LANG==='th'?['ถูก','ผิด']:['True','False'], correctShuffled: q.correctIndex};
+    }
+    const choicesTH = q.choicesTH||[];
+    const choicesEN = q.choicesEN||[];
+    const idxArr = choicesTH.map((_,i)=>i);
+    const shuffledIdx = shuffleArray(idxArr);
+    return {
+      ...q,
+      choicesShuffledTH: shuffledIdx.map(i=>choicesTH[i]),
+      choicesShuffledEN: shuffledIdx.map(i=>choicesEN[i]),
+      correctShuffled: shuffledIdx.indexOf(q.correctIndex)
+    };
+  });
+
+  STATE.examSession = {
+    courseId,
+    questions,
+    currentIdx: 0,
+    answers: new Array(questions.length).fill(null),
+    tabSwitchCount: 0,
+    cheatDetected: false,
+    startTime: Date.now(),
+    timeUsedSec: 0,
+    perQuestionTimer: null,
+    timeLeft: 20
+  };
+
+  attachExamGuards();
+  renderExamQuestion();
+}
+
+function renderExamQuestion(){
+  const c = document.getElementById('mainContent');
+  const s = STATE.examSession;
+  const q = s.questions[s.currentIdx];
+  s.timeLeft = 20;
+
+  let choicesHtml = '';
+  if(q.type === 'truefalse'){
+    q.choicesShuffled.forEach((choice, idx)=>{
+      const sel = s.answers[s.currentIdx]===idx;
+      choicesHtml += `<button class="choiceBtn ${sel?'selected':''}" onclick="selectAnswer(${idx})">${escapeHtml(choice)}</button>`;
+    });
+  } else {
+    const choices = LANG==='th' ? q.choicesShuffledTH : q.choicesShuffledEN;
+    choices.forEach((choice, idx)=>{
+      const sel = s.answers[s.currentIdx]===idx;
+      const letter = String.fromCharCode(65+idx);
+      choicesHtml += `<button class="choiceBtn ${sel?'selected':''}" onclick="selectAnswer(${idx})">${letter}. ${escapeHtml(choice)}</button>`;
+    });
+  }
+
+  c.innerHTML = `
+    <div class="examHeader">
+      <div class="qProgress">${t('question')} ${s.currentIdx+1} / ${s.questions.length}</div>
+      <div class="timerBox" id="examTimer">${s.timeLeft}</div>
+    </div>
+    <div class="questionCard">
+      <div class="questionText">${escapeHtml(LANG==='th'?q.questionTH:q.questionEN)}</div>
+      <div id="choicesArea">${choicesHtml}</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-teal btn-block" id="examNextBtn" onclick="nextQuestion()" ${s.answers[s.currentIdx]===null?'disabled':''}>
+        ${s.currentIdx === s.questions.length-1 ? t('submit_exam') : '→'}
+      </button>
+    </div>`;
+
+  startQuestionTimer();
+}
+
+function selectAnswer(idx){
+  STATE.examSession.answers[STATE.examSession.currentIdx] = idx;
+  document.querySelectorAll('#choicesArea .choiceBtn').forEach((btn,i)=>{
+    btn.classList.toggle('selected', i===idx);
+  });
+  document.getElementById('examNextBtn').disabled = false;
+}
+
+function startQuestionTimer(){
+  clearInterval(STATE.examSession.perQuestionTimer);
+  const timerEl = document.getElementById('examTimer');
+  STATE.examSession.perQuestionTimer = setInterval(()=>{
+    STATE.examSession.timeLeft--;
+    STATE.examSession.timeUsedSec++;
+    const el = document.getElementById('examTimer');
+    if(el){
+      el.textContent = STATE.examSession.timeLeft;
+      el.classList.toggle('warn', STATE.examSession.timeLeft<=5);
+    }
+    if(STATE.examSession.timeLeft<=0){
+      clearInterval(STATE.examSession.perQuestionTimer);
+      // auto move to next (counts as no-answer if unselected)
+      nextQuestion(true);
+    }
+  }, 1000);
+}
+
+function nextQuestion(forced){
+  clearInterval(STATE.examSession.perQuestionTimer);
+  const s = STATE.examSession;
+  if(!forced && s.answers[s.currentIdx]===null) return;
+
+  if(s.currentIdx < s.questions.length - 1){
+    s.currentIdx++;
+    renderExamQuestion();
+  } else {
+    confirmSubmitExam();
+  }
+}
+
+function confirmSubmitExam(){
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'confirmSubmitModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalTitle">${t('confirm_submit')}</div>
+      <div class="modalText">${t('confirm_submit_text')}</div>
+      <div class="modalActions">
+        <button class="btn btn-gray" onclick="document.getElementById('confirmSubmitModal').remove()">${t('no_back')}</button>
+        <button class="btn btn-teal" onclick="document.getElementById('confirmSubmitModal').remove(); submitExam();">${t('yes_submit')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function submitExam(){
+  const s = STATE.examSession;
+  clearInterval(s.perQuestionTimer);
+  detachExamGuards();
+
+  let correctCount = 0;
+  s.questions.forEach((q, idx)=>{
+    if(s.answers[idx] === q.correctShuffled) correctCount++;
+  });
+  const scorePct = Math.round((correctCount / s.questions.length) * 100);
+  const passed = !s.cheatDetected && scorePct >= 80;
+
+  const attemptId = genId();
+  const logEntry = {
+    score: scorePct,
+    totalQuestions: s.questions.length,
+    correctCount,
+    timeUsedSec: s.timeUsedSec,
+    passed,
+    tabSwitchCount: s.tabSwitchCount,
+    cheatDetected: s.cheatDetected,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  };
+  db.ref(`examLogs/${STATE.user.username}/${s.courseId}/${attemptId}`).set(logEntry);
+
+  const progRef = db.ref(`progress/${STATE.user.username}/${s.courseId}`);
+  progRef.once('value').then(snap=>{
+    const cur = snap.val() || {};
+    const attempts = (cur.examAttempts||0) + 1;
+    let newFailStreak = cur.failStreak || 0;
+
+    if(passed){
+      progRef.update({
+        examPassed:true, examAttempts:attempts, bestScore: Math.max(cur.bestScore||0, scorePct), failStreak:0,
+        lastUpdated: firebase.database.ServerValue.TIMESTAMP
+      });
+    } else {
+      newFailStreak++;
+      if(newFailStreak >= 2 || s.cheatDetected){
+        // reset video progress to 0
+        progRef.update({
+          examAttempts:attempts, failStreak:0, watchedSec:0, percent:0, completed:false,
+          lastUpdated: firebase.database.ServerValue.TIMESTAMP
+        });
+      } else {
+        progRef.update({ examAttempts:attempts, failStreak:newFailStreak, lastUpdated: firebase.database.ServerValue.TIMESTAMP });
+      }
+    }
+    renderExamResult(scorePct, passed, correctCount, s.questions.length, newFailStreak>=2);
+  });
+}
+
+function renderExamResult(scorePct, passed, correct, total, wasReset){
+  const c = document.getElementById('mainContent');
+  c.innerHTML = `
+    <div class="card" style="text-align:center;padding:32px 20px;">
+      <div style="font-size:50px;">${passed?'🎉':'😕'}</div>
+      <div style="font-size:18px;font-weight:800;margin:10px 0 4px;color:${passed?'var(--green)':'var(--red)'};">
+        ${passed ? t('pass') : t('fail')}
+      </div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:18px;">${t('exam_result')}</div>
+      <div style="font-size:38px;font-weight:800;color:var(--navy);">${scorePct}%</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:20px;">${correct} / ${total} ${t('your_score')}</div>
+      ${wasReset ? `<div class="modalText" style="color:var(--red);font-weight:700;margin-bottom:16px;">${t('reset_warning_text')}</div>` : ''}
+      <button class="btn btn-teal btn-block" onclick="STATE.currentCourse=null; goPage('lessons');">${t('back_lessons')}</button>
+    </div>`;
+}
+
+/* ====================================================================
+   ANTI-CHEAT GUARDS
+   ==================================================================== */
+let cheatHandlersBound = false;
+
+function attachExamGuards(){
+  if(cheatHandlersBound) return;
+  cheatHandlersBound = true;
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('blur', handleWindowBlur);
+  document.addEventListener('contextmenu', blockContextMenu);
+  document.addEventListener('copy', blockCopy);
+  document.addEventListener('cut', blockCopy);
+  document.addEventListener('selectstart', blockSelect);
+  document.addEventListener('keydown', blockDevToolsKeys);
+}
+
+function detachExamGuards(){
+  if(!cheatHandlersBound) return;
+  cheatHandlersBound = false;
+  document.removeEventListener('visibilitychange', handleVisibilityChange);
+  window.removeEventListener('blur', handleWindowBlur);
+  document.removeEventListener('contextmenu', blockContextMenu);
+  document.removeEventListener('copy', blockCopy);
+  document.removeEventListener('cut', blockCopy);
+  document.removeEventListener('selectstart', blockSelect);
+  document.removeEventListener('keydown', blockDevToolsKeys);
+}
+
+function blockContextMenu(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockCopy(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockSelect(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockDevToolsKeys(e){
+  if(!STATE.examSession) return;
+  // Block common copy / devtools shortcuts during exam
+  const k = e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey) && ['c','x','u','s','p'].includes(k)){ e.preventDefault(); }
+  if(k === 'f12'){ e.preventDefault(); }
+}
+
+let lastBlurTime = 0;
+function handleWindowBlur(){
+  if(!STATE.examSession) return;
+  registerTabSwitch();
+}
+function handleVisibilityChange(){
+  if(!STATE.examSession) return;
+  if(document.hidden){ registerTabSwitch(); }
+}
+
+function registerTabSwitch(){
+  const now = Date.now();
+  if(now - lastBlurTime < 1500) return; // debounce duplicate events
+  lastBlurTime = now;
+
+  const s = STATE.examSession;
+  if(!s) return;
+  s.tabSwitchCount++;
+
+  const logId = genId();
+  db.ref(`cheatLog/${logId}`).set({
+    username: STATE.user.username,
+    nameEN: STATE.user.nameEN,
+    nameTH: STATE.user.nameTH,
+    courseId: s.courseId,
+    type: s.tabSwitchCount>=2 ? 'auto_fail' : 'tab_switch_warning',
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  });
+
+  if(s.tabSwitchCount === 1){
+    showCheatWarningModal();
+  } else if(s.tabSwitchCount >= 2){
+    s.cheatDetected = true;
+    showCheatFailModal();
+  }
+}
+
+function showCheatWarningModal(){
+  clearInterval(STATE.examSession.perQuestionTimer);
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'cheatWarnModal';
+  modal.innerHTML = `
+    <div class="modalBox danger">
+      <div class="modalIcon">⚠️</div>
+      <div class="modalTitle danger">${t('tab_warning_title')}</div>
+      <div class="modalText">${t('tab_warning_text')}</div>
+      <div class="modalActions">
+        <button class="btn btn-red btn-block" onclick="ackCheatWarning()">${t('ack')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function ackCheatWarning(){
+  document.getElementById('cheatWarnModal').remove();
+  if(STATE.examSession){
+    startQuestionTimer();
+  }
+}
+
+function showCheatFailModal(){
+  clearInterval(STATE.examSession.perQuestionTimer);
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'cheatFailModal';
+  modal.innerHTML = `
+    <div class="modalBox danger">
+      <div class="modalIcon">🚫</div>
+      <div class="modalTitle danger">${t('cheat_title')}</div>
+      <div class="modalText">${t('cheat_text')}</div>
+      <div class="modalActions">
+        <button class="btn btn-red btn-block" onclick="document.getElementById('cheatFailModal').remove(); forceFailExam();">${t('ack')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function forceFailExam(){
+  // submitExam() reads s.cheatDetected (already true) -> passed=false, triggers reset
+  submitExam();
+}
+
+/* ====================================================================
+   HISTORY PAGE (Staff's own learning history)
+   ==================================================================== */
+function getRequiredCoursesForUser(user){
+  const result = [];
+  Object.keys(STATE.courses).forEach(deptId=>{
+    Object.keys(STATE.courses[deptId]).forEach(courseId=>{
+      const course = STATE.courses[deptId][courseId];
+      if(course.active===false) return;
+      const reqLevels = course.requiredLevel || [];
+      const reqDepts = course.requiredDept || [];
+      const matchDept = reqDepts.length===0 || reqDepts.includes(user.department) || reqDepts.includes('ALL');
+      const matchLevel = reqLevels.length===0 || reqLevels.includes(user.level) || reqLevels.includes('ALL');
+      if(matchDept && matchLevel){
+        result.push({...course, id:courseId, deptId});
+      }
+    });
+  });
+  return result;
+}
+
+function renderHistoryPage(c){
+  const required = getRequiredCoursesForUser(STATE.user);
+  const myProgress = STATE.progress[STATE.user.username] || {};
+  const myExamLogs = STATE.examLogs[STATE.user.username] || {};
+
+  const completedCount = required.filter(course => (myProgress[course.id]||{}).examPassed).length;
+  const totalCount = required.length;
+  const pct = totalCount>0 ? Math.round((completedCount/totalCount)*100) : 0;
+
+  let html = `<div class="sectionTitle">${t('history_title')}</div>`;
+  html += `<div class="statGrid">
+      <div class="statBox"><div class="statNum">${totalCount}</div><div class="statLabel">${t('total_required')}</div></div>
+      <div class="statBox"><div class="statNum" style="color:var(--green);">${completedCount}</div><div class="statLabel">${t('total_completed')}</div></div>
+      <div class="statBox"><div class="statNum" style="color:var(--teal);">${pct}%</div><div class="statLabel">${t('total_pct')}</div></div>
+    </div>`;
+
+  if(required.length===0){
+    html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_history')}</div>`;
+  }
+
+  required.forEach(course=>{
+    const p = myProgress[course.id] || {};
+    const logs = myExamLogs[course.id] || {};
+    const attempts = Object.values(logs);
+    const lastAttempt = attempts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0))[0];
+    const passed = !!p.examPassed;
+    const pctWatch = Math.round(p.percent||0);
+
+    let badge = `<span class="badge progress">${t('in_progress')}</span>`;
+    if(passed) badge = `<span class="badge pass">${t('pass')}</span>`;
+    else if(lastAttempt && !lastAttempt.passed) badge = `<span class="badge fail">${t('fail')}</span>`;
+
+    html += `<div class="historyRow">
+        <div class="hLeft">
+          <div class="hTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+          <div class="hMeta">
+            ${t('progress_pct')}: ${pctWatch}%
+            ${lastAttempt ? ` · ${t('attempts')}: ${attempts.length} · ${t('time_used')}: ${fmtTime(lastAttempt.timeUsedSec)}` : ''}
+            ${lastAttempt && lastAttempt.tabSwitchCount>0 ? ` · ${t('tab_switches')}: ${lastAttempt.tabSwitchCount}` : ''}
+          </div>
+        </div>
+        ${badge}
+      </div>`;
+  });
+
+  c.innerHTML = html;
+}
+
+/* ====================================================================
+   ADMIN DASHBOARD — Shell + Overview
+   ==================================================================== */
+let adminTab = 'overview';
+
+function renderAdminPage(c){
+  const tabs = [
+    {id:'overview', label: LANG==='th'?'ภาพรวม':'Overview'},
+    {id:'staff', label: t('tab_staff')},
+    {id:'courses', label: t('tab_courses')},
+    {id:'questions', label: t('tab_questions')},
+    {id:'logs', label: t('tab_logs')},
+    {id:'settings', label: t('tab_settings')}
+  ];
+  let html = `<div class="sectionTitle">${t('admin_title')}</div>`;
+  html += `<div class="adminTabs">`;
+  tabs.forEach(tab=>{
+    html += `<button class="adminTab ${adminTab===tab.id?'active':''}" onclick="adminTab='${tab.id}'; renderPage();">${tab.label}</button>`;
+  });
+  html += `</div><div id="adminTabContent"></div>`;
+  c.innerHTML = html;
+
+  const tc = document.getElementById('adminTabContent');
+  if(adminTab==='overview') renderAdminOverview(tc);
+  if(adminTab==='staff') renderAdminStaff(tc);
+  if(adminTab==='courses') renderAdminCourses(tc);
+  if(adminTab==='questions') renderAdminQuestions(tc);
+  if(adminTab==='logs') renderAdminLogs(tc);
+  if(adminTab==='settings') renderAdminSettings(tc);
+}
+
+function renderAdminOverview(c){
+  const totalStaff = Object.keys(STATE.users).filter(u=>STATE.users[u].role!=='admin').length;
+  let totalCourses = 0;
+  Object.values(STATE.courses).forEach(d=>{ totalCourses += Object.keys(d).length; });
+
+  let totalExams = 0;
+  Object.values(STATE.examLogs).forEach(userLogs=>{
+    Object.values(userLogs).forEach(courseLogs=>{
+      totalExams += Object.keys(courseLogs).length;
+    });
+  });
+
+  const cheatCount = Object.values(STATE.cheatLog).filter(l=>l.type==='auto_fail').length;
+
+  c.innerHTML = `
+    <div class="statGrid">
+      <div class="statBox"><div class="statNum">${totalStaff}</div><div class="statLabel">${t('total_staff')}</div></div>
+      <div class="statBox"><div class="statNum">${totalCourses}</div><div class="statLabel">${t('total_courses')}</div></div>
+      <div class="statBox"><div class="statNum">${totalExams}</div><div class="statLabel">${t('total_exams')}</div></div>
+    </div>
+    <div class="statGrid" style="grid-template-columns:1fr;">
+      <div class="statBox" style="text-align:left;display:flex;align-items:center;justify-content:space-between;padding:16px;">
+        <div>
+          <div class="statLabel">${t('cheat_count')}</div>
+          <div class="statNum" style="color:var(--red);">${cheatCount}</div>
+        </div>
+        <div style="font-size:30px;">🚨</div>
+      </div>
+    </div>`;
+}
+
+/* ====================================================================
+   ADMIN — STAFF MANAGEMENT
+   ==================================================================== */
+const DEPT_LIST_FALLBACK = ['HR','FO','FBS','FBK','Sports','Spa','Cafe','AC','Sales','ENG','Executive'];
+
+function renderAdminStaff(c){
+  const users = Object.keys(STATE.users).map(u=>({username:u, ...STATE.users[u]}));
+  let html = `<button class="btn btn-teal" style="margin-bottom:14px;" onclick="openStaffForm()">+ ${t('add_staff')}</button>`;
+  html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+      <th>${t('name_th')}</th><th>${t('username')}</th><th>${t('department')}</th><th>${t('level')}</th><th>${t('role')}</th><th></th>
+    </tr></thead><tbody>`;
+  users.forEach(u=>{
+    html += `<tr>
+        <td>${escapeHtml(u.nameTH)}<br><span style="color:var(--gray);font-size:10.5px;">${escapeHtml(u.nameEN||'')}</span></td>
+        <td>${escapeHtml(u.username)}</td>
+        <td>${escapeHtml(u.department||'-')}</td>
+        <td>${escapeHtml(u.level||'-')}</td>
+        <td>${u.role==='admin'?t('admin_role'):t('staff_role')}</td>
+        <td style="white-space:nowrap;">
+          <button class="miniBtn btn-outline" onclick='openStaffForm(${JSON.stringify(u.username)})'>${t('edit')}</button>
+          <button class="miniBtn btn-red" onclick="confirmDeleteStaff('${u.username}')">${t('delete')}</button>
+        </td>
+      </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  c.innerHTML = html;
+}
+
+function openStaffForm(username){
+  const existing = username ? STATE.users[username] : null;
+  const deptOptions = Object.keys(STATE.departments).length>0
+    ? Object.keys(STATE.departments).map(id=>STATE.departments[id].nameEN || id)
+    : DEPT_LIST_FALLBACK;
+
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'staffFormModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalTitle">${existing ? t('edit') : t('add_staff')}</div>
+      <div class="formGrid">
+        <div class="inputGroup full"><label>${t('name_th')}</label><input id="f_nameTH" value="${escapeHtml(existing?.nameTH||'')}"></div>
+        <div class="inputGroup full"><label>${t('name_en')}</label><input id="f_nameEN" value="${escapeHtml(existing?.nameEN||'')}"></div>
+        <div class="inputGroup"><label>${t('username')}</label><input id="f_username" value="${escapeHtml(username||'')}" ${existing?'disabled':''}></div>
+        <div class="inputGroup"><label>${t('password')}</label><input id="f_password" value="${escapeHtml(existing?.password||'')}" placeholder="e.g. ab12"></div>
+        <div class="inputGroup">
+          <label>${t('department')}</label>
+          <select id="f_department">
+            ${deptOptions.map(d=>`<option value="${escapeHtml(d)}" ${existing?.department===d?'selected':''}>${escapeHtml(d)}</option>`).join('')}
+            <option value="ALL" ${existing?.department==='ALL'?'selected':''}>ALL</option>
+          </select>
+        </div>
+        <div class="inputGroup"><label>${t('level')}</label><input id="f_level" value="${escapeHtml(existing?.level||'1')}"></div>
+        <div class="inputGroup full">
+          <label>${t('role')}</label>
+          <select id="f_role">
+            <option value="staff" ${existing?.role!=='admin'?'selected':''}>${t('staff_role')}</option>
+            <option value="admin" ${existing?.role==='admin'?'selected':''}>${t('admin_role')}</option>
+          </select>
+        </div>
+      </div>
+      <div class="modalActions" style="margin-top:16px;">
+        <button class="btn btn-gray" onclick="document.getElementById('staffFormModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-teal" onclick="saveStaffForm(${JSON.stringify(username||null)})">${t('save')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function saveStaffForm(existingUsername){
+  const nameTH = document.getElementById('f_nameTH').value.trim();
+  const nameEN = document.getElementById('f_nameEN').value.trim();
+  const username = existingUsername || document.getElementById('f_username').value.trim();
+  const password = document.getElementById('f_password').value.trim();
+  const department = document.getElementById('f_department').value;
+  const level = document.getElementById('f_level').value.trim();
+  const role = document.getElementById('f_role').value;
+
+  if(!nameTH || !nameEN || !username || !password || !department || !level){
+    showToast(t('field_required')); return;
+  }
+  const hasLetter = /[a-zA-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  if(password.length < 4 || !hasLetter || !hasNumber){
+    showToast(t('pass_min_len')); return;
+  }
+
+  db.ref('users/'+username).set({
+    nameTH, nameEN, username, password, department, level, role, active:true
+  }).then(()=>{
+    document.getElementById('staffFormModal').remove();
+    showToast(t('save')+' ✓');
+  });
+}
+
+function confirmDeleteStaff(username){
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'delConfirmModal';
+  modal.innerHTML = `
+    <div class="modalBox danger">
+      <div class="modalTitle danger">${t('confirm_delete')}</div>
+      <div class="modalText">${t('confirm_delete_text')}<br><b>${escapeHtml(username)}</b></div>
+      <div class="modalActions">
+        <button class="btn btn-gray" onclick="document.getElementById('delConfirmModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-red" onclick="db.ref('users/${username}').remove().then(()=>{document.getElementById('delConfirmModal').remove(); showToast('${t('delete')} ✓');})">${t('delete')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+/* ====================================================================
+   ADMIN — DEPARTMENTS & COURSES MANAGEMENT
+   ==================================================================== */
+function renderAdminCourses(c){
+  const depts = Object.keys(STATE.departments).map(id=>({id, ...STATE.departments[id]})).sort((a,b)=>(a.order||0)-(b.order||0));
+
+  let html = `<button class="btn btn-teal" style="margin-bottom:14px;" onclick="openDeptForm()">+ ${t('add_dept')}</button>`;
+
+  depts.forEach(d=>{
+    const courses = getDeptCourses(d.id);
+    html += `<div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-weight:800;color:var(--navy);">${d.icon||''} ${escapeHtml(LANG==='th'?d.nameTH:d.nameEN)}</div>
+          <div>
+            <button class="miniBtn btn-outline" onclick='openDeptForm(${JSON.stringify(d.id)})'>${t('edit')}</button>
+            <button class="miniBtn btn-red" onclick="confirmDeleteDept('${d.id}')">${t('delete')}</button>
+          </div>
+        </div>
+        ${courses.map(course=>`
+          <div class="historyRow">
+            <div class="hLeft">
+              <div class="hTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+              <div class="hMeta">${course.durationSec||0}s · Drive: ${escapeHtml(course.driveFileId||'-')}</div>
+            </div>
+            <div>
+              <button class="miniBtn btn-outline" onclick='openCourseForm(${JSON.stringify(d.id)}, ${JSON.stringify(course.id)})'>${t('edit')}</button>
+              <button class="miniBtn btn-red" onclick="confirmDeleteCourse('${d.id}','${course.id}')">${t('delete')}</button>
+            </div>
+          </div>
+        `).join('')}
+        <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick='openCourseForm(${JSON.stringify(d.id)})'>+ ${t('add_course')}</button>
+      </div>`;
+  });
+
+  c.innerHTML = html;
+}
+
+function openDeptForm(deptId){
+  const existing = deptId ? STATE.departments[deptId] : null;
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'deptFormModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalTitle">${existing ? t('edit') : t('add_dept')}</div>
+      <div class="inputGroup"><label>${t('dept_icon')}</label><input id="d_icon" value="${escapeHtml(existing?.icon||'📁')}"></div>
+      <div class="inputGroup"><label>${t('name_th')}</label><input id="d_nameTH" value="${escapeHtml(existing?.nameTH||'')}"></div>
+      <div class="inputGroup"><label>${t('name_en')}</label><input id="d_nameEN" value="${escapeHtml(existing?.nameEN||'')}"></div>
+      <div class="modalActions" style="margin-top:10px;">
+        <button class="btn btn-gray" onclick="document.getElementById('deptFormModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-teal" onclick="saveDeptForm(${JSON.stringify(deptId||null)})">${t('save')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function saveDeptForm(existingId){
+  const icon = document.getElementById('d_icon').value.trim();
+  const nameTH = document.getElementById('d_nameTH').value.trim();
+  const nameEN = document.getElementById('d_nameEN').value.trim();
+  if(!nameTH || !nameEN){ showToast(t('field_required')); return; }
+  const id = existingId || nameEN.replace(/\s+/g,'_');
+  db.ref('departments/'+id).set({
+    nameTH, nameEN, icon: icon||'📁', order: Object.keys(STATE.departments).length
+  }).then(()=>{
+    document.getElementById('deptFormModal').remove();
+    showToast(t('save')+' ✓');
+  });
+}
+
+function confirmDeleteDept(deptId){
+  if(!confirm(t('confirm_delete')+' '+t('confirm_delete_text'))) return;
+  db.ref('departments/'+deptId).remove();
+  db.ref('courses/'+deptId).remove();
+}
+
+function openCourseForm(deptId, courseId){
+  const existing = courseId ? STATE.courses[deptId][courseId] : null;
+  const levels = ['1','2','3','Manager','ALL'];
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'courseFormModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalTitle">${existing ? t('edit') : t('add_course')}</div>
+      <div class="inputGroup"><label>${t('course_title_th')}</label><input id="c_titleTH" value="${escapeHtml(existing?.titleTH||'')}"></div>
+      <div class="inputGroup"><label>${t('course_title_en')}</label><input id="c_titleEN" value="${escapeHtml(existing?.titleEN||'')}"></div>
+      <div class="inputGroup"><label>${t('drive_id')}</label><input id="c_driveId" value="${escapeHtml(existing?.driveFileId||'')}" placeholder="1A2b3C... (จาก URL ของไฟล์)"></div>
+      <div class="inputGroup"><label>${t('duration')}</label><input id="c_duration" type="number" value="${existing?.durationSec||600}"></div>
+      <div class="inputGroup">
+        <label>${t('required_for')} (${t('level')})</label>
+        <select id="c_reqLevel" multiple style="height:90px;">
+          ${levels.map(l=>`<option value="${l}" ${(existing?.requiredLevel||[]).includes(l)?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+      <div class="modalActions" style="margin-top:10px;">
+        <button class="btn btn-gray" onclick="document.getElementById('courseFormModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-teal" onclick="saveCourseForm(${JSON.stringify(deptId)}, ${JSON.stringify(courseId||null)})">${t('save')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function saveCourseForm(deptId, existingCourseId){
+  const titleTH = document.getElementById('c_titleTH').value.trim();
+  const titleEN = document.getElementById('c_titleEN').value.trim();
+  const driveFileId = document.getElementById('c_driveId').value.trim();
+  const durationSec = parseInt(document.getElementById('c_duration').value) || 600;
+  const reqLevel = Array.from(document.getElementById('c_reqLevel').selectedOptions).map(o=>o.value);
+
+  if(!titleTH || !titleEN || !driveFileId){ showToast(t('field_required')); return; }
+
+  const id = existingCourseId || genId();
+  const existingOrder = existingCourseId ? (STATE.courses[deptId][existingCourseId].order||0) : getDeptCourses(deptId).length;
+
+  db.ref(`courses/${deptId}/${id}`).set({
+    titleTH, titleEN, driveFileId, durationSec, requiredLevel: reqLevel, requiredDept:[deptId],
+    order: existingOrder, active:true
+  }).then(()=>{
+    document.getElementById('courseFormModal').remove();
+    showToast(t('save')+' ✓');
+  });
+}
+
+function confirmDeleteCourse(deptId, courseId){
+  if(!confirm(t('confirm_delete')+' '+t('confirm_delete_text'))) return;
+  db.ref(`courses/${deptId}/${courseId}`).remove();
+  db.ref(`questionBanks/${courseId}`).remove();
+}
+
+/* ====================================================================
+   ADMIN — QUESTION BANK MANAGEMENT
+   ==================================================================== */
+let selectedQBCourse = null;
+
+function getAllCoursesFlat(){
+  const result = [];
+  Object.keys(STATE.courses).forEach(deptId=>{
+    Object.keys(STATE.courses[deptId]).forEach(courseId=>{
+      result.push({...STATE.courses[deptId][courseId], id:courseId, deptId});
+    });
+  });
+  return result;
+}
+
+function renderAdminQuestions(c){
+  const allCourses = getAllCoursesFlat();
+  if(!selectedQBCourse && allCourses.length>0) selectedQBCourse = allCourses[0].id;
+
+  let html = `<div class="inputGroup"><label>${t('select_course')}</label>
+      <select onchange="selectedQBCourse=this.value; renderPage();">
+        ${allCourses.map(course=>`<option value="${course.id}" ${selectedQBCourse===course.id?'selected':''}>${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</option>`).join('')}
+      </select>
+    </div>`;
+
+  if(!selectedQBCourse){ c.innerHTML = html; return; }
+
+  const bank = STATE.questionBanks[selectedQBCourse] || {};
+  const questions = Object.keys(bank).map(id=>({id, ...bank[id]}));
+
+  html += `<button class="btn btn-teal" style="margin:10px 0 14px;" onclick="openQuestionForm('${selectedQBCourse}')">+ ${t('add_question')}</button>`;
+  html += `<div style="font-size:12px;color:var(--gray);margin-bottom:10px;">${questions.length} / 50 ${LANG==='th'?'ข้อ (แนะนำอย่างน้อย 50 ข้อ เพื่อสุ่ม 10 ข้อ)':'questions (50+ recommended for random pool of 10)'}</div>`;
+
+  questions.forEach((q, idx)=>{
+    const choices = q.type==='truefalse' ? (LANG==='th'?['ถูก','ผิด']:['True','False']) : (LANG==='th'?q.choicesTH:q.choicesEN)||[];
+    html += `<div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:13.5px;">${idx+1}. ${escapeHtml(LANG==='th'?q.questionTH:q.questionEN)}</div>
+            <div style="font-size:11.5px;color:var(--gray);margin-top:6px;">
+              ${choices.map((ch,i)=>`<div style="${i===q.correctIndex?'color:var(--green);font-weight:700;':''}">${String.fromCharCode(65+i)}. ${escapeHtml(ch)} ${i===q.correctIndex?'✓':''}</div>`).join('')}
+            </div>
+          </div>
+          <div style="white-space:nowrap;">
+            <button class="miniBtn btn-outline" onclick='openQuestionForm(${JSON.stringify(selectedQBCourse)}, ${JSON.stringify(q.id)})'>${t('edit')}</button>
+            <button class="miniBtn btn-red" onclick="confirmDeleteQuestion('${selectedQBCourse}','${q.id}')">${t('delete')}</button>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  c.innerHTML = html;
+}
+
+function openQuestionForm(courseId, questionId){
+  const existing = questionId ? STATE.questionBanks[courseId][questionId] : null;
+  const type = existing?.type || 'mc';
+
+  const modal = document.createElement('div');
+  modal.className = 'modalOverlay';
+  modal.id = 'qFormModal';
+  modal.innerHTML = `
+    <div class="modalBox">
+      <div class="modalTitle">${existing ? t('edit') : t('add_question')}</div>
+      <div class="inputGroup">
+        <label>${t('question_type')}</label>
+        <select id="q_type" onchange="toggleQTypeFields()">
+          <option value="mc" ${type==='mc'?'selected':''}>${t('type_mc')}</option>
+          <option value="truefalse" ${type==='truefalse'?'selected':''}>${t('type_tf')}</option>
+        </select>
+      </div>
+      <div class="inputGroup"><label>${t('question_th')}</label><textarea id="q_questionTH">${escapeHtml(existing?.questionTH||'')}</textarea></div>
+      <div class="inputGroup"><label>${t('question_en')}</label><textarea id="q_questionEN">${escapeHtml(existing?.questionEN||'')}</textarea></div>
+
+      <div id="mcFields" class="${type==='truefalse'?'hidden':''}">
+        ${[0,1,2,3].map(i=>`
+          <div class="formGrid" style="margin-bottom:6px;">
+            <div class="inputGroup"><label>${t('choice')} ${String.fromCharCode(65+i)} (TH)</label><input id="q_choiceTH_${i}" value="${escapeHtml((existing?.choicesTH||[])[i]||'')}"></div>
+            <div class="inputGroup"><label>${t('choice')} ${String.fromCharCode(65+i)} (EN)</label><input id="q_choiceEN_${i}" value="${escapeHtml((existing?.choicesEN||[])[i]||'')}"></div>
+          </div>`).join('')}
+      </div>
+
+      <div class="inputGroup">
+        <label>${t('correct_answer')}</label>
+        <select id="q_correctIndex">
+          <option value="0" ${existing?.correctIndex===0?'selected':''}>${type==='truefalse'?(LANG==='th'?'ถูก':'True'):'A'}</option>
+          <option value="1" ${existing?.correctIndex===1?'selected':''}>${type==='truefalse'?(LANG==='th'?'ผิด':'False'):'B'}</option>
+          <option value="2" ${existing?.correctIndex===2?'selected':''} class="mcOnly">C</option>
+          <option value="3" ${existing?.correctIndex===3?'selected':''} class="mcOnly">D</option>
+        </select>
+      </div>
+
+      <div class="modalActions" style="margin-top:10px;">
+        <button class="btn btn-gray" onclick="document.getElementById('qFormModal').remove()">${t('cancel')}</button>
+        <button class="btn btn-teal" onclick="saveQuestionForm(${JSON.stringify(courseId)}, ${JSON.stringify(questionId||null)})">${t('save')}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+function toggleQTypeFields(){
+  const type = document.getElementById('q_type').value;
+  document.getElementById('mcFields').classList.toggle('hidden', type==='truefalse');
+  document.querySelectorAll('.mcOnly').forEach(o=> o.style.display = type==='truefalse' ? 'none':'block');
+}
+
+function saveQuestionForm(courseId, existingId){
+  const type = document.getElementById('q_type').value;
+  const questionTH = document.getElementById('q_questionTH').value.trim();
+  const questionEN = document.getElementById('q_questionEN').value.trim();
+  const correctIndex = parseInt(document.getElementById('q_correctIndex').value);
+
+  if(!questionTH || !questionEN){ showToast(t('field_required')); return; }
+
+  const data = { type, questionTH, questionEN, correctIndex };
+
+  if(type==='mc'){
+    const choicesTH = [0,1,2,3].map(i=>document.getElementById('q_choiceTH_'+i).value.trim());
+    const choicesEN = [0,1,2,3].map(i=>document.getElementById('q_choiceEN_'+i).value.trim());
+    if(choicesTH.some(c=>!c) || choicesEN.some(c=>!c)){ showToast(t('field_required')); return; }
+    data.choicesTH = choicesTH;
+    data.choicesEN = choicesEN;
+  }
+
+  const id = existingId || genId();
+  db.ref(`questionBanks/${courseId}/${id}`).set(data).then(()=>{
+    document.getElementById('qFormModal').remove();
+    showToast(t('save')+' ✓');
+  });
+}
+
+function confirmDeleteQuestion(courseId, questionId){
+  if(!confirm(t('confirm_delete'))) return;
+  db.ref(`questionBanks/${courseId}/${questionId}`).remove();
+}
+
+/* ====================================================================
+   ADMIN — BEHAVIOR LOGS (Cheat Detection Dashboard)
+   ==================================================================== */
+function renderAdminLogs(c){
+  const logs = Object.keys(STATE.cheatLog).map(id=>({id, ...STATE.cheatLog[id]})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+
+  let html = `<div class="sectionTitle" style="font-size:14px;">${t('cheat_log_title')}</div>`;
+  if(logs.length===0){
+    html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_logs')}</div>`;
+    c.innerHTML = html;
+    return;
+  }
+
+  html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+      <th>${LANG==='th'?'พนักงาน':'Staff'}</th><th>${LANG==='th'?'คอร์ส':'Course'}</th><th>${LANG==='th'?'ประเภท':'Type'}</th><th>${LANG==='th'?'เวลา':'Time'}</th>
+    </tr></thead><tbody>`;
+
+  logs.forEach(l=>{
+    const course = findCourseObj(l.courseId);
+    const courseTitle = course ? (LANG==='th'?course.titleTH:course.titleEN) : l.courseId;
+    const isFail = l.type === 'auto_fail';
+    html += `<tr>
+        <td>${escapeHtml(LANG==='th'?l.nameTH:l.nameEN)}</td>
+        <td>${escapeHtml(courseTitle)}</td>
+        <td>${isFail ? `<span class="cheatTag">${LANG==='th'?'ทุจริต':'CHEAT'}</span>` : (LANG==='th'?'เตือน':'Warning')}</td>
+        <td>${fmtDate(l.timestamp)}</td>
+      </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // also show exam attempts summary (time used per attempt) for full transparency
+  html += `<div class="sectionTitle" style="font-size:14px;margin-top:20px;">${LANG==='th'?'ประวัติการสอบทั้งหมด':'All Exam Attempts'}</div>`;
+  html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+      <th>${LANG==='th'?'พนักงาน':'Staff'}</th><th>${LANG==='th'?'คอร์ส':'Course'}</th><th>${LANG==='th'?'คะแนน':'Score'}</th><th>${t('time_used')}</th><th>${t('tab_switches')}</th><th>${LANG==='th'?'ผล':'Result'}</th>
+    </tr></thead><tbody>`;
+
+  const allAttempts = [];
+  Object.keys(STATE.examLogs).forEach(username=>{
+    Object.keys(STATE.examLogs[username]||{}).forEach(courseId=>{
+      Object.values(STATE.examLogs[username][courseId]).forEach(att=>{
+        allAttempts.push({username, courseId, ...att});
+      });
+    });
+  });
+  allAttempts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+
+  allAttempts.slice(0,100).forEach(att=>{
+    const user = STATE.users[att.username] || {};
+    const course = findCourseObj(att.courseId);
+    const courseTitle = course ? (LANG==='th'?course.titleTH:course.titleEN) : att.courseId;
+    html += `<tr>
+        <td>${escapeHtml(LANG==='th'?(user.nameTH||att.username):(user.nameEN||att.username))}</td>
+        <td>${escapeHtml(courseTitle)}</td>
+        <td>${att.score}%</td>
+        <td>${fmtTime(att.timeUsedSec)}</td>
+        <td>${att.tabSwitchCount||0}</td>
+        <td>${att.passed ? `<span class="badge pass">${t('pass')}</span>` : `<span class="badge fail">${t('fail')}</span>`}${att.cheatDetected?`<span class="cheatTag">${LANG==='th'?'ทุจริต':'CHEAT'}</span>`:''}</td>
+      </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  c.innerHTML = html;
+}
+
+/* ====================================================================
+   ADMIN — SETTINGS (Google Sheet Sync via Apps Script)
+   ==================================================================== */
+function renderAdminSettings(c){
+  const savedUrl = localStorage.getItem('cch_gas_url') || '';
+  let html = `
+    <div class="card">
+      <div style="font-weight:800;color:var(--navy);margin-bottom:10px;">${t('sync_sheet')}</div>
+      <div class="inputGroup">
+        <label>${t('sync_url')}</label>
+        <input id="gasUrlInput" value="${escapeHtml(savedUrl)}" placeholder="https://script.google.com/macros/s/XXXX/exec">
+      </div>
+      <button class="btn btn-teal btn-block" onclick="syncFromGoogleSheet()">${t('sync_sheet')}</button>
+      <div id="syncStatus" style="margin-top:10px;font-size:13px;color:var(--gray);"></div>
+    </div>
+    <div class="card">
+      <div style="font-weight:800;color:var(--navy);margin-bottom:8px;">App Info</div>
+      <div style="font-size:12.5px;color:var(--gray);line-height:1.8;">
+        Project: cch-academy<br>
+        Database: Firebase Realtime Database (asia-southeast1)<br>
+        Hosting: GitHub Pages
+      </div>
+    </div>`;
+  c.innerHTML = html;
+}
+
+function syncFromGoogleSheet(){
+  const url = document.getElementById('gasUrlInput').value.trim();
+  const statusEl = document.getElementById('syncStatus');
+  if(!url){ showToast(t('field_required')); return; }
+  localStorage.setItem('cch_gas_url', url);
+  statusEl.textContent = t('syncing');
+
+  fetch(url)
+    .then(res=>res.json())
+    .then(rows=>{
+      // Expected columns: nameTH, nameEN, username, password, department, level
+      const updates = {};
+      rows.forEach(row=>{
+        if(!row.username) return;
+        updates['users/'+row.username] = {
+          nameTH: row.nameTH || '',
+          nameEN: row.nameEN || '',
+          username: row.username,
+          password: row.password || '1234',
+          department: row.department || '',
+          level: row.level || '1',
+          role: row.role === 'admin' ? 'admin' : 'staff',
+          active: row.active !== false && row.active !== 'FALSE'
+        };
+      });
+      return db.ref().update(updates);
+    })
+    .then(()=>{
+      db.ref('meta/lastSheetSync').set(firebase.database.ServerValue.TIMESTAMP);
+      statusEl.textContent = t('sync_done');
+      showToast(t('sync_done'));
+    })
+    .catch(err=>{
+      console.error(err);
+      statusEl.textContent = 'Error: '+err.message;
+    });
+}
