@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>CCH Academy</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f4c5c">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CCH Academy">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<style>
+:root{
+  --navy:#0f4c5c;
+  --navy-dark:#0a363f;
+  --teal:#17a2a0;
+  --gold:#d4a843;
+  --sand:#f7f3ea;
+  --white:#ffffff;
+  --gray:#6b7280;
+  --gray-light:#e5e7eb;
+  --red:#dc2626;
+  --green:#16a34a;
+  --shadow: 0 2px 12px rgba(15,76,92,0.12);
+  --radius: 14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; padding:0; font-family:'Segoe UI', 'Sarabun', sans-serif; background:var(--sand); color:#1f2937; -webkit-user-select:none; user-select:none;}
+input, textarea{user-select:text; -webkit-user-select:text;}
+img{ -webkit-user-drag:none; pointer-events:none;}
+button{font-family:inherit; cursor:pointer;}
+.hidden{display:none !important;}
+#app{min-height:100vh; display:flex; flex-direction:column;}
+
+/* ===== LOGIN ===== */
+#loginScreen{
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%, var(--navy-dark) 100%);
+  padding:20px;
+}
+.loginBox{
+  background:var(--white); border-radius:20px; padding:36px 28px; width:100%; max-width:380px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.3); text-align:center;
+}
+.loginLogo{width:72px; height:72px; border-radius:18px; background:linear-gradient(135deg,var(--teal),var(--navy)); display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-size:32px; color:white; font-weight:700;}
+.loginBox h1{font-size:22px; margin:0 0 4px; color:var(--navy);}
+.loginBox p.sub{color:var(--gray); font-size:13px; margin:0 0 24px;}
+.langToggle{display:flex; justify-content:center; gap:8px; margin-bottom:20px;}
+.langBtn{padding:6px 16px; border-radius:20px; border:1.5px solid var(--gray-light); background:white; font-size:13px; font-weight:600; color:var(--gray);}
+.langBtn.active{background:var(--teal); color:white; border-color:var(--teal);}
+.inputGroup{text-align:left; margin-bottom:14px;}
+.inputGroup label{display:block; font-size:12px; font-weight:600; color:var(--gray); margin-bottom:5px;}
+.inputGroup input{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:15px; outline:none; transition:.15s;}
+.inputGroup input:focus{border-color:var(--teal);}
+.btnPrimary{width:100%; padding:13px; border-radius:10px; border:none; background:var(--teal); color:white; font-size:16px; font-weight:700; margin-top:8px;}
+.btnPrimary:active{transform:scale(0.98);}
+.btnPrimary:disabled{opacity:.6;}
+.loginError{color:var(--red); font-size:13px; margin-top:10px; min-height:18px;}
+
+/* ===== TOP BAR ===== */
+#topBar{
+  background:var(--navy); color:white; padding:12px 16px; display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:50; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.topBarLeft{display:flex; align-items:center; gap:10px;}
+.topBarLogo{width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--teal),var(--gold)); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;}
+.topBarTitle{font-size:15px; font-weight:700;}
+.topBarUser{font-size:11px; opacity:.8;}
+.topBarRight{display:flex; align-items:center; gap:8px;}
+.iconBtn{background:rgba(255,255,255,0.12); border:none; color:white; width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:14px;}
+
+/* ===== BOTTOM NAV ===== */
+#bottomNav{
+  position:sticky; bottom:0; background:white; display:flex; border-top:1px solid var(--gray-light);
+  box-shadow:0 -2px 10px rgba(0,0,0,0.06); z-index:50;
+}
+.navBtn{flex:1; padding:9px 4px 8px; border:none; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--gray); font-size:10.5px; font-weight:600;}
+.navBtn .navIcon{font-size:19px;}
+.navBtn.active{color:var(--teal);}
+
+#mainContent{flex:1; padding:16px; padding-bottom:24px; max-width:760px; margin:0 auto; width:100%;}
+
+/* ===== CARDS / GENERIC ===== */
+.card{background:white; border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); margin-bottom:14px;}
+.sectionTitle{font-size:17px; font-weight:700; color:var(--navy); margin:0 0 14px;}
+.deptGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+@media(min-width:600px){.deptGrid{grid-template-columns:repeat(3,1fr);}}
+.deptCard{background:white; border-radius:14px; padding:18px 12px; text-align:center; box-shadow:var(--shadow); border:2px solid transparent; transition:.15s;}
+.deptCard:active{transform:scale(0.96); border-color:var(--teal);}
+.deptIcon{font-size:30px; margin-bottom:8px;}
+.deptName{font-size:13px; font-weight:700; color:var(--navy);}
+.deptCount{font-size:11px; color:var(--gray); margin-top:2px;}
+
+.courseRow{display:flex; align-items:center; gap:12px; padding:14px 10px; border-radius:12px; background:white; box-shadow:var(--shadow); margin-bottom:10px;}
+.courseCheck{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; font-weight:700;}
+.courseCheck.done{background:var(--green); color:white;}
+.courseCheck.pending{background:var(--gray-light); color:var(--gray);}
+.courseInfo{flex:1; min-width:0;}
+.courseTitle{font-size:14px; font-weight:700; color:#1f2937; margin-bottom:3px;}
+.courseMeta{font-size:11.5px; color:var(--gray);}
+.courseArrow{color:var(--gray-light); font-size:18px;}
+.progressBarOuter{height:5px; background:var(--gray-light); border-radius:3px; margin-top:6px; overflow:hidden;}
+.progressBarInner{height:100%; background:var(--teal); border-radius:3px; transition:width .3s;}
+
+.btn{padding:10px 18px; border-radius:10px; border:none; font-weight:700; font-size:14px;}
+.btn-teal{background:var(--teal); color:white;}
+.btn-gold{background:var(--gold); color:white;}
+.btn-gray{background:var(--gray-light); color:#374151;}
+.btn-red{background:var(--red); color:white;}
+.btn-outline{background:white; border:1.5px solid var(--teal); color:var(--teal);}
+.btn-block{width:100%;}
+.btn:disabled{opacity:.5;}
+
+.backBtn{display:flex; align-items:center; gap:6px; color:var(--teal); font-weight:700; font-size:14px; margin-bottom:14px; background:none; border:none; padding:0;}
+
+.loadingWrap{display:flex; flex-direction:column; align-items:center; padding:50px 20px; color:var(--gray);}
+.spinner{width:34px; height:34px; border:3px solid var(--gray-light); border-top-color:var(--teal); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.toast{position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:#1f2937; color:white; padding:12px 20px; border-radius:30px; font-size:13px; font-weight:600; z-index:200; box-shadow:0 4px 16px rgba(0,0,0,0.25); max-width:90%; text-align:center;}
+
+/* ===== MODAL ===== */
+.modalOverlay{position:fixed; inset:0; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:300; padding:20px;}
+.modalBox{background:white; border-radius:18px; padding:24px; max-width:420px; width:100%; max-height:88vh; overflow-y:auto;}
+.modalBox.danger{border-top:8px solid var(--red);}
+.modalIcon{font-size:42px; text-align:center; margin-bottom:10px;}
+.modalTitle{font-size:18px; font-weight:800; text-align:center; margin-bottom:8px;}
+.modalTitle.danger{color:var(--red);}
+.modalText{font-size:14px; color:#374151; text-align:center; line-height:1.6; margin-bottom:18px;}
+.modalActions{display:flex; gap:10px;}
+.modalActions .btn{flex:1;}
+
+/* ===== VIDEO PLAYER ===== */
+.videoWrap{position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; margin-bottom:14px;}
+.videoWrap iframe{width:100%; height:100%; border:none;}
+.watchStats{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--gray); margin-bottom:10px;}
+
+/* ===== EXAM ===== */
+.examHeader{display:flex; justify-content:space-between; align-items:center; background:var(--navy); color:white; padding:14px 16px; border-radius:14px; margin-bottom:16px;}
+.timerBox{background:rgba(255,255,255,0.15); padding:6px 14px; border-radius:20px; font-weight:800; font-size:16px; font-variant-numeric:tabular-nums;}
+.timerBox.warn{background:var(--red); animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.qProgress{font-size:12px; opacity:.85;}
+.questionCard{background:white; border-radius:16px; padding:20px; box-shadow:var(--shadow);}
+.questionText{font-size:16px; font-weight:700; color:#1f2937; margin-bottom:18px; line-height:1.5;}
+.choiceBtn{display:block; width:100%; text-align:left; padding:13px 16px; border-radius:12px; border:1.5px solid var(--gray-light); background:white; font-size:14px; margin-bottom:10px; font-weight:500;}
+.choiceBtn.selected{border-color:var(--teal); background:#e6f7f7; font-weight:700;}
+.choiceBtn.correct{border-color:var(--green); background:#e9f9ee;}
+.choiceBtn.wrong{border-color:var(--red); background:#fdecec;}
+
+/* ===== HISTORY ===== */
+.statGrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;}
+.statBox{background:white; border-radius:14px; padding:14px 8px; text-align:center; box-shadow:var(--shadow);}
+.statNum{font-size:22px; font-weight:800; color:var(--navy);}
+.statLabel{font-size:10.5px; color:var(--gray); margin-top:2px;}
+.historyRow{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:white; border-radius:12px; box-shadow:var(--shadow); margin-bottom:8px;}
+.historyRow .hLeft{flex:1; min-width:0;}
+.historyRow .hTitle{font-size:13.5px; font-weight:700; color:#1f2937;}
+.historyRow .hMeta{font-size:11px; color:var(--gray); margin-top:2px;}
+.badge{font-size:10.5px; font-weight:800; padding:4px 9px; border-radius:20px; white-space:nowrap;}
+.badge.pass{background:#dcfce7; color:var(--green);}
+.badge.fail{background:#fee2e2; color:var(--red);}
+.badge.progress{background:#fef3c7; color:#b45309;}
+
+/* ===== ADMIN ===== */
+.adminTabs{display:flex; gap:6px; overflow-x:auto; margin-bottom:16px; padding-bottom:4px;}
+.adminTab{flex-shrink:0; padding:8px 14px; border-radius:20px; border:1.5px solid var(--gray-light); background:white; font-size:12.5px; font-weight:700; color:var(--gray); white-space:nowrap;}
+.adminTab.active{background:var(--navy); color:white; border-color:var(--navy);}
+.dataTable{width:100%; border-collapse:collapse; font-size:12.5px;}
+.dataTable th{background:var(--sand); padding:8px 6px; text-align:left; font-weight:700; color:var(--navy); position:sticky; top:0;}
+.dataTable td{padding:8px 6px; border-bottom:1px solid var(--gray-light);}
+.tableWrap{overflow-x:auto; border-radius:12px; box-shadow:var(--shadow); background:white;}
+.formGrid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.formGrid .full{grid-column:1/-1;}
+.miniBtn{padding:6px 10px; border-radius:8px; border:none; font-size:11.5px; font-weight:700;}
+
+select{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:14px; background:white;}
+textarea{width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid var(--gray-light); font-size:14px; resize:vertical; min-height:70px;}
+
+.cheatTag{display:inline-block; background:var(--red); color:white; font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; margin-left:6px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- SPLASH (shown while checking session) -->
+  <div id="splashScreen" style="position:fixed;inset:0;background:linear-gradient(135deg,#0f4c5c,#0a363f);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;">
+    <div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#17a2a0,#0f4c5c);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:white;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.3);">CCH</div>
+    <div style="color:white;font-size:20px;font-weight:700;margin-bottom:6px;">CCH Academy</div>
+    <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:28px;">ระบบอบรมออนไลน์พนักงานโรงแรม</div>
+    <div style="width:36px;height:36px;border:3px solid rgba(255,255,255,0.2);border-top-color:#17a2a0;border-radius:50%;animation:spin .8s linear infinite;"></div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="hidden">
+    <div class="loginBox">
+      <div class="loginLogo">CCH</div>
+      <h1 id="loginTitle">CCH Academy</h1>
+      <p class="sub" id="loginSub">ระบบอบรมออนไลน์พนักงานโรงแรม</p>
+      <div class="langToggle">
+        <button class="langBtn active" id="langTH" onclick="setLang('th')">ไทย</button>
+        <button class="langBtn" id="langEN" onclick="setLang('en')">English</button>
+      </div>
+      <div class="inputGroup">
+        <label id="lblUser">ชื่อผู้ใช้</label>
+        <input type="text" id="loginUser" autocomplete="username" placeholder="CCH">
+      </div>
+      <div class="inputGroup">
+        <label id="lblPass">รหัสผ่าน</label>
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="••••">
+      </div>
+      <button class="btnPrimary" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+      <div class="loginError" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP (after login) -->
+  <div id="mainApp" class="hidden">
+    <div id="topBar">
+      <div class="topBarLeft">
+        <div class="topBarLogo">CCH</div>
+        <div>
+          <div class="topBarTitle">CCH Academy</div>
+          <div class="topBarUser" id="topBarUserName">-</div>
+        </div>
+      </div>
+      <div class="topBarRight">
+        <button class="iconBtn" onclick="toggleLangMenu()" title="Language"></button>
+        <button class="iconBtn" onclick="doLogout()" title="Logout"></button>
+      </div>
+    </div>
+
+    <div id="mainContent"></div>
+
+    <div id="bottomNav">
+      <button class="navBtn active" id="navLessons" onclick="goPage('lessons')">
+        <span class="navIcon"></span><span data-i="nav_lessons">บทเรียน</span>
+      </button>
+      <button class="navBtn" id="navHistory" onclick="goPage('history')">
+        <span class="navIcon"></span><span data-i="nav_history">ประวัติ</span>
+      </button>
+      <button class="navBtn hidden" id="navAdmin" onclick="goPage('admin')">
+        <span class="navIcon"></span><span data-i="nav_admin">ผู้ดูแล</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============== FIREBASE INIT ============== */
+const firebaseConfig = {
+  apiKey: "AIzaSyCwlbdLuU_fqTEvnepQa6QBIYbUNGZaxVs",
+  authDomain: "cch-academy.firebaseapp.com",
+  databaseURL: "https://cch-academy-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "cch-academy",
+  storageBucket: "cch-academy.firebasestorage.app",
+  messagingSenderId: "325758871984",
+  appId: "1:325758871984:web:d92eba2924003d17dcce75"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+<script>
+/* ====================================================================
+ CCH ACADEMY - app.js
+ ==================================================================== */
+
+/* ---------------- I18N ---------------- */
+const I18N = {
+ th:{
+ app_name:"CCH Academy",
+ login_sub:"ระบบอบรมออนไลน์พนักงานโรงแรม",
+ lbl_user:"ชื่อผู้ใช้", lbl_pass:"รหัสผ่าน", login_btn:"เข้าสู่ระบบ",
+ err_login:"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
+ err_inactive:"บัญชีนี้ถูกระงับ กรุณาติดต่อฝ่ายบุคคล",
+ nav_lessons:"บทเรียน", nav_history:"ประวัติ", nav_admin:"ผู้ดูแล",
+ select_dept:"เลือกแผนกที่ต้องการเรียน",
+ courses_count:"คอร์ส",
+ back:"ย้อนกลับ",
+ completed:"เรียนจบแล้ว", in_progress:"กำลังเรียน", not_started:"ยังไม่เริ่ม",
+ watch_video:"ดูวิดีโอ",
+ take_exam:"ทำแบบทดสอบ",
+ exam_locked:"ดูวิดีโอให้ครบ 60% ก่อนทำแบบทดสอบ",
+ progress_pct:"ความคืบหน้า",
+ start_exam:"เริ่มทำแบบทดสอบ",
+ exam_instructions:"คำแนะนำการสอบ",
+ exam_rule1:"มีทั้งหมด 10 ข้อ ข้อละ 20 วินาที",
+ exam_rule2:"ต้องตอบให้ครบทุกข้อ ข้ามไม่ได้",
+ exam_rule3:"ห้ามสลับแท็บหรือออกจากหน้าจอ ระบบจะตรวจจับทันที",
+ exam_rule4:"ต้องได้คะแนน 80% ขึ้นไปจึงจะผ่าน",
+ exam_rule5:"หากไม่ผ่านเกิน 2 ครั้ง ต้องดูวิดีโอใหม่ตั้งแต่ต้น",
+ begin:"เริ่มสอบ", cancel:"ยกเลิก",
+ question:"ข้อที่",
+ submit_exam:"ส่งคำตอบ",
+ confirm_submit:"ยืนยันส่งคำตอบ?",
+ confirm_submit_text:"เมื่อส่งแล้วจะไม่สามารถแก้ไขได้",
+ yes_submit:"ส่งคำตอบ", no_back:"กลับไปทำต่อ",
+ exam_result:"ผลการสอบ",
+ your_score:"คะแนนของคุณ",
+ pass:"ผ่าน", fail:"ไม่ผ่าน",
+ try_again:"ทำใหม่อีกครั้ง", back_lessons:"กลับสู่บทเรียน",
+ tab_warning_title:" ตรวจพบการสลับหน้าจอ",
+ tab_warning_text:"ระบบตรวจพบว่าคุณออกจากหน้าสอบ การกระทำนี้ถือเป็นพฤติกรรมต้องสงสัย หากเกิดขึ้นอีกครั้ง ระบบจะปรับตกทันทีและบันทึกพฤติกรรมทุจริต",
+ ack:"รับทราบ",
+ cheat_title:" ตรวจพบพฤติกรรมทุจริต",
+ cheat_text:"คุณสลับหน้าจอระหว่างสอบซ้ำอีกครั้ง ระบบจะปรับผลเป็น \"ไม่ผ่าน\" ทันที และบันทึกพฤติกรรมนี้ในระบบ คุณต้องเริ่มดูวิดีโอใหม่ตั้งแต่ต้น",
+ reset_warning_title:"การเรียนของคุณถูกรีเซ็ต",
+ reset_warning_text:"คุณทำแบบทดสอบไม่ผ่านครบจำนวนครั้งที่กำหนด กรุณาดูวิดีโอใหม่ให้ครบ 60% เพื่อทำแบบทดสอบอีกครั้ง",
+ history_title:"ประวัติการเรียนของฉัน",
+ total_required:"ต้องเรียนทั้งหมด", total_completed:"ผ่านแล้ว", total_pct:"ความสำเร็จ",
+ no_history:"ยังไม่มีประวัติการเรียน",
+ time_used:"เวลาที่ใช้สอบ", attempts:"จำนวนครั้ง", tab_switches:"สลับหน้าจอ",
+ admin_title:"แผงควบคุมผู้ดูแลระบบ",
+ tab_staff:"พนักงาน", tab_courses:"คอร์สเรียน", tab_questions:"คลังข้อสอบ", tab_logs:"บันทึกพฤติกรรม", tab_settings:"ตั้งค่า",
+ add_staff:"เพิ่มพนักงาน", edit:"แก้ไข", delete:"ลบ",
+ name_th:"ชื่อ (ไทย)", name_en:"ชื่อ (อังกฤษ)", username:"ชื่อผู้ใช้", password:"รหัสผ่าน",
+ department:"แผนก", level:"เลเวล", role:"สิทธิ์",
+ save:"บันทึก", confirm_delete:"ยืนยันการลบ?", confirm_delete_text:"การลบไม่สามารถย้อนกลับได้",
+ sync_sheet:"ซิงค์จาก Google Sheet", sync_url:"วาง Web App URL ของ Apps Script",
+ syncing:"กำลังซิงค์ข้อมูล...", sync_done:"ซิงค์ข้อมูลสำเร็จ",
+ add_dept:"เพิ่มแผนก", dept_icon:"ไอคอน (emoji)",
+ add_course:"เพิ่มคอร์ส", course_title_th:"ชื่อคอร์ส (ไทย)", course_title_en:"ชื่อคอร์ส (อังกฤษ)",
+ drive_id:"Google Drive File ID", duration:"ความยาว (วินาที)",
+ add_question:"เพิ่มคำถาม", question_type:"ประเภทคำถาม",
+ type_mc:"เลือกตอบ", type_tf:"ถูก/ผิด",
+ question_th:"คำถาม (ไทย)", question_en:"คำถาม (อังกฤษ)",
+ choice:"ตัวเลือก", correct_answer:"คำตอบที่ถูก",
+ select_course:"เลือกคอร์ส",
+ cheat_log_title:"บันทึกพฤติกรรมการสอบ",
+ no_logs:"ยังไม่มีบันทึก",
+ dashboard_overview:"ภาพรวมระบบ",
+ total_staff:"พนักงานทั้งหมด", total_courses:"คอร์สทั้งหมด", total_exams:"สอบไปแล้ว", cheat_count:"พบทุจริต",
+ saving:"กำลังบันทึก...",
+ field_required:"กรุณากรอกข้อมูลให้ครบ",
+ pass_min_len:"รหัสผ่านต้องมีตัวเลขและตัวอักษรรวมกันอย่างน้อย 4 ตัว",
+ select_lang:"เลือกภาษา",
+ close:"ปิด",
+ none:"-",
+ all_depts:"ทุกแผนก",
+ staff_role:"พนักงาน", admin_role:"ผู้ดูแลระบบ",
+ no_courses_dept:"ยังไม่มีคอร์สในแผนกนี้",
+ video_progress_note:"ระบบจะบันทึกเวลาเรียนอัตโนมัติ",
+ exam_passed_badge:"ผ่านแล้ว",
+ manage_required:"กำหนดวิชาบังคับ",
+ required_for:"บังคับสำหรับแผนก/เลเวล",
+ active:"ใช้งาน", inactive:"ปิดใช้งาน",
+ confirm:"ยืนยัน"
+ },
+ en:{
+ app_name:"CCH Academy",
+ login_sub:"Hotel Staff Online Training System",
+ lbl_user:"Username", lbl_pass:"Password", login_btn:"Login",
+ err_login:"Invalid username or password",
+ err_inactive:"This account is disabled. Please contact HR.",
+ nav_lessons:"Lessons", nav_history:"History", nav_admin:"Admin",
+ select_dept:"Select a department to learn",
+ courses_count:"courses",
+ back:"Back",
+ completed:"Completed", in_progress:"In Progress", not_started:"Not Started",
+ watch_video:"Watch Video",
+ take_exam:"Take Exam",
+ exam_locked:"Watch at least 60% of the video to unlock the exam",
+ progress_pct:"Progress",
+ start_exam:"Start Exam",
+ exam_instructions:"Exam Instructions",
+ exam_rule1:"10 questions total, 20 seconds each",
+ exam_rule2:"You must answer all questions, no skipping",
+ exam_rule3:"Do not switch tabs or leave the screen — detected instantly",
+ exam_rule4:"You need 80% or higher to pass",
+ exam_rule5:"Fail more than 2 times and you must re-watch the video from the start",
+ begin:"Begin Exam", cancel:"Cancel",
+ question:"Question",
+ submit_exam:"Submit",
+ confirm_submit:"Confirm submission?",
+ confirm_submit_text:"You cannot change your answers after submitting",
+ yes_submit:"Submit", no_back:"Go Back",
+ exam_result:"Exam Result",
+ your_score:"Your Score",
+ pass:"Pass", fail:"Fail",
+ try_again:"Try Again", back_lessons:"Back to Lessons",
+ tab_warning_title:" Tab Switch Detected",
+ tab_warning_text:"You left the exam screen. This is flagged as suspicious. Doing this again will result in an automatic fail and a cheating record.",
+ ack:"Acknowledge",
+ cheat_title:" Cheating Detected",
+ cheat_text:"You switched tabs again during the exam. Your result is now marked as FAIL and this behavior has been logged. You must re-watch the video from the beginning.",
+ reset_warning_title:"Your Progress Has Been Reset",
+ reset_warning_text:"You failed the exam too many times. Please re-watch at least 60% of the video to retake the exam.",
+ history_title:"My Learning History",
+ total_required:"Required", total_completed:"Completed", total_pct:"Success Rate",
+ no_history:"No learning history yet",
+ time_used:"Time Used", attempts:"Attempts", tab_switches:"Tab Switches",
+ admin_title:"Admin Dashboard",
+ tab_staff:"Staff", tab_courses:"Courses", tab_questions:"Question Bank", tab_logs:"Behavior Logs", tab_settings:"Settings",
+ add_staff:"Add Staff", edit:"Edit", delete:"Delete",
+ name_th:"Name (Thai)", name_en:"Name (English)", username:"Username", password:"Password",
+ department:"Department", level:"Level", role:"Role",
+ save:"Save", confirm_delete:"Confirm Delete?", confirm_delete_text:"This action cannot be undone",
+ sync_sheet:"Sync from Google Sheet", sync_url:"Paste Apps Script Web App URL",
+ syncing:"Syncing data...", sync_done:"Sync complete",
+ add_dept:"Add Department", dept_icon:"Icon (emoji)",
+ add_course:"Add Course", course_title_th:"Course Title (Thai)", course_title_en:"Course Title (English)",
+ drive_id:"Google Drive File ID", duration:"Duration (seconds)",
+ add_question:"Add Question", question_type:"Question Type",
+ type_mc:"Multiple Choice", type_tf:"True/False",
+ question_th:"Question (Thai)", question_en:"Question (English)",
+ choice:"Choice", correct_answer:"Correct Answer",
+ select_course:"Select Course",
+ cheat_log_title:"Exam Behavior Log",
+ no_logs:"No logs yet",
+ dashboard_overview:"System Overview",
+ total_staff:"Total Staff", total_courses:"Total Courses", total_exams:"Exams Taken", cheat_count:"Cheating Detected",
+ saving:"Saving...",
+ field_required:"Please fill in all fields",
+ pass_min_len:"Password must have at least 4 chars, letters + numbers",
+ select_lang:"Select Language",
+ close:"Close",
+ none:"-",
+ all_depts:"All Departments",
+ staff_role:"Staff", admin_role:"Administrator",
+ no_courses_dept:"No courses in this department yet",
+ video_progress_note:"Your watch time is recorded automatically",
+ exam_passed_badge:"Passed",
+ manage_required:"Manage Required Courses",
+ required_for:"Required for Dept/Level",
+ active:"Active", inactive:"Inactive",
+ confirm:"Confirm"
+ }
+};
+let LANG = localStorage.getItem('cch_lang') || 'th';
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+/* ---------------- GLOBAL STATE ---------------- */
+const STATE = {
+ user: null,
+ page: 'lessons',
+ departments: {},
+ courses: {},
+ questionBanks: {},
+ progress: {},
+ users: {},
+ examLogs: {},
+ cheatLog: {},
+ currentDept: null,
+ currentCourse: null,
+ examSession: null,
+ listenersAttached: false
+};
+
+const SESSION_KEY = 'cch_session_user';
+
+/* ---------------- UTIL ---------------- */
+function showToast(msg, ms=2600){
+ const el = document.createElement('div');
+ el.className = 'toast';
+ el.textContent = msg;
+ document.body.appendChild(el);
+ setTimeout(()=>el.remove(), ms);
+}
+function escapeHtml(str){
+ if(str===undefined||str===null) return '';
+ return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function genId(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function fmtTime(sec){
+ sec = Math.floor(sec||0);
+ const m = Math.floor(sec/60), s = sec%60;
+ return `${m}:${String(s).padStart(2,'0')}`;
+}
+function fmtDate(ts){
+ if(!ts) return '-';
+ const d = new Date(ts);
+ return d.toLocaleDateString(LANG==='th'?'th-TH':'en-GB', {day:'2-digit', month:'2-digit', year:'numeric'}) + ' ' +
+ d.toLocaleTimeString(LANG==='th'?'th-TH':'en-GB', {hour:'2-digit', minute:'2-digit'});
+}
+
+/* ---------------- LANGUAGE ---------------- */
+function setLang(lang){
+ LANG = lang;
+ localStorage.setItem('cch_lang', lang);
+ document.getElementById('langTH').classList.toggle('active', lang==='th');
+ document.getElementById('langEN').classList.toggle('active', lang==='en');
+ document.documentElement.lang = lang;
+ applyStaticTranslations();
+ if(STATE.user){ renderPage(); }
+}
+function applyStaticTranslations(){
+ document.getElementById('loginTitle').textContent = t('app_name');
+ document.getElementById('loginSub').textContent = t('login_sub');
+ document.getElementById('lblUser').textContent = t('lbl_user');
+ document.getElementById('lblPass').textContent = t('lbl_pass');
+ document.getElementById('loginBtn').textContent = t('login_btn');
+ document.querySelectorAll('[data-i]').forEach(el=>{
+ el.textContent = t(el.getAttribute('data-i'));
+ });
+}
+
+function toggleLangMenu(){
+ setLang(LANG === 'th' ? 'en' : 'th');
+ showToast(LANG==='th' ? 'เปลี่ยนเป็นภาษาไทย' : 'Switched to English', 1500);
+}
+
+/* ---------------- AUTH ---------------- */
+function doLogin(){
+ const u = document.getElementById('loginUser').value.trim();
+ const p = document.getElementById('loginPass').value;
+ const errEl = document.getElementById('loginError');
+ errEl.textContent = '';
+ if(!u || !p){ errEl.textContent = t('field_required'); return; }
+
+ const btn = document.getElementById('loginBtn');
+ btn.disabled = true;
+
+ db.ref('users/'+u).once('value').then(snap=>{
+ btn.disabled = false;
+ const userData = snap.val();
+ if(!userData || userData.password !== p){
+ errEl.textContent = t('err_login');
+ return;
+ }
+ if(userData.active === false){
+ errEl.textContent = t('err_inactive');
+ return;
+ }
+ userData.username = u;
+ STATE.user = userData;
+ localStorage.setItem(SESSION_KEY, u);
+ enterApp();
+ }).catch(err=>{
+ btn.disabled = false;
+ errEl.textContent = t('err_login');
+ console.error(err);
+ });
+}
+
+function doLogout(){
+ detachExamGuards();
+ localStorage.removeItem(SESSION_KEY);
+ STATE.user = null;
+ STATE.page = 'lessons';
+ document.getElementById('mainApp').classList.add('hidden');
+ document.getElementById('loginScreen').classList.remove('hidden');
+ document.getElementById('loginUser').value = '';
+ document.getElementById('loginPass').value = '';
+}
+
+function hideSplash(){
+ const s = document.getElementById('splashScreen');
+ if(s){ s.style.transition='opacity .3s'; s.style.opacity='0'; setTimeout(()=>s.remove(),320); }
+}
+function showLogin(){
+ hideSplash();
+ const ls = document.getElementById('loginScreen');
+ if(ls) ls.classList.remove('hidden');
+}
+function tryAutoLogin(){
+ const saved = localStorage.getItem(SESSION_KEY);
+ if(!saved){ showLogin(); return; }
+ db.ref('users/'+saved).once('value').then(snap=>{
+ const userData = snap.val();
+ if(userData && userData.active !== false){
+ userData.username = saved;
+ STATE.user = userData;
+ enterApp();
+ } else {
+ localStorage.removeItem(SESSION_KEY);
+ showLogin();
+ }
+ }).catch(()=>{ showLogin(); });
+}
+
+function enterApp(){
+ hideSplash();
+ document.getElementById('loginScreen').classList.add('hidden');
+ document.getElementById('mainApp').classList.remove('hidden');
+ document.getElementById('topBarUserName').textContent = LANG==='th' ? STATE.user.nameTH : STATE.user.nameEN;
+ document.getElementById('navAdmin').classList.toggle('hidden', STATE.user.role !== 'admin');
+ attachGlobalListeners();
+ goPage('lessons');
+}
+
+/* init lang buttons + auto login on load */
+document.addEventListener('DOMContentLoaded', ()=>{
+ setLang(LANG);
+ tryAutoLogin();
+});
+
+/* ====================================================================
+ FIREBASE REALTIME LISTENERS
+ ==================================================================== */
+function attachGlobalListeners(){
+ if(STATE.listenersAttached) return;
+ STATE.listenersAttached = true;
+
+ db.ref('departments').on('value', snap=>{
+ STATE.departments = snap.val() || {};
+ if(STATE.page==='lessons') renderPage();
+ });
+ db.ref('courses').on('value', snap=>{
+ STATE.courses = snap.val() || {};
+ if(['lessons','admin'].includes(STATE.page)) renderPage();
+ });
+ db.ref('questionBanks').on('value', snap=>{
+ STATE.questionBanks = snap.val() || {};
+ });
+ db.ref('progress/'+STATE.user.username).on('value', snap=>{
+ STATE.progress[STATE.user.username] = snap.val() || {};
+ if(['lessons','history'].includes(STATE.page)) renderPage();
+ });
+ db.ref('examLogs/'+STATE.user.username).on('value', snap=>{
+ STATE.examLogs[STATE.user.username] = snap.val() || {};
+ if(STATE.page==='history') renderPage();
+ });
+
+ if(STATE.user.role === 'admin'){
+ db.ref('users').on('value', snap=>{
+ STATE.users = snap.val() || {};
+ if(STATE.page==='admin') renderPage();
+ });
+ db.ref('cheatLog').on('value', snap=>{
+ STATE.cheatLog = snap.val() || {};
+ if(STATE.page==='admin') renderPage();
+ });
+ db.ref('progress').on('value', snap=>{
+ STATE.progress = snap.val() || {};
+ if(STATE.page==='admin') renderPage();
+ });
+ db.ref('examLogs').on('value', snap=>{
+ STATE.examLogs = snap.val() || {};
+ if(STATE.page==='admin') renderPage();
+ });
+ }
+}
+
+/* ====================================================================
+ NAVIGATION
+ ==================================================================== */
+function goPage(page){
+ STATE.page = page;
+ STATE.currentDept = null;
+ STATE.currentCourse = null;
+ document.querySelectorAll('.navBtn').forEach(b=>b.classList.remove('active'));
+ const map = {lessons:'navLessons', history:'navHistory', admin:'navAdmin'};
+ if(map[page]) document.getElementById(map[page]).classList.add('active');
+ renderPage();
+}
+
+function renderPage(){
+ const c = document.getElementById('mainContent');
+ if(!STATE.user){ return; }
+ if(STATE.page === 'lessons') return renderLessonsPage(c);
+ if(STATE.page === 'history') return renderHistoryPage(c);
+ if(STATE.page === 'admin') return renderAdminPage(c);
+}
+
+/* ====================================================================
+ LESSONS PAGE — Department Grid -> Course List -> Course Detail
+ ==================================================================== */
+function renderLessonsPage(c){
+ if(STATE.currentCourse){ return renderCourseDetail(c); }
+ if(STATE.currentDept){ return renderCourseList(c); }
+ renderDeptGrid(c);
+}
+
+function getDeptCourses(deptId){
+ const list = STATE.courses[deptId] || {};
+ return Object.keys(list).map(id=>({id, ...list[id]})).filter(x=>x.active!==false).sort((a,b)=>(a.order||0)-(b.order||0));
+}
+
+function renderDeptGrid(c){
+ const depts = Object.keys(STATE.departments).map(id=>({id, ...STATE.departments[id]})).sort((a,b)=>(a.order||0)-(b.order||0));
+ let html = `<div class="sectionTitle">${t('select_dept')}</div><div class="deptGrid">`;
+ if(depts.length===0){
+ html += `<div class="card" style="grid-column:1/-1;text-align:center;color:var(--gray);">${t('no_courses_dept')}</div>`;
+ }
+ depts.forEach(d=>{
+ const courses = getDeptCourses(d.id);
+ html += `
+ <button class="deptCard" onclick="openDept('${d.id}')" style="border:none;">
+ <div class="deptIcon">${d.icon||''}</div>
+ <div class="deptName">${escapeHtml(LANG==='th'?d.nameTH:d.nameEN)}</div>
+ <div class="deptCount">${courses.length} ${t('courses_count')}</div>
+ </button>`;
+ });
+ html += `</div>`;
+ c.innerHTML = html;
+}
+
+function openDept(deptId){
+ STATE.currentDept = deptId;
+ renderPage();
+}
+
+function renderCourseList(c){
+ const dept = STATE.departments[STATE.currentDept];
+ const courses = getDeptCourses(STATE.currentDept);
+ const myProgress = (STATE.progress[STATE.user.username]) || {};
+
+ let html = `<button class="backBtn" onclick="STATE.currentDept=null; renderPage();">‹ ${t('back')}</button>`;
+ html += `<div class="sectionTitle">${dept.icon||''} ${escapeHtml(LANG==='th'?dept.nameTH:dept.nameEN)}</div>`;
+
+ if(courses.length===0){
+ html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_courses_dept')}</div>`;
+ }
+
+ courses.forEach(course=>{
+ const p = myProgress[course.id] || {};
+ const pct = Math.min(100, Math.round(p.percent||0));
+ const examPassed = !!p.examPassed;
+ const icon = examPassed ? '✓' : (pct>0 ? pct+'%' : '–');
+ html += `
+ <div class="courseRow" onclick="openCourse('${course.id}')" style="cursor:pointer;">
+ <div class="courseCheck ${examPassed?'done':'pending'}" style="font-size:${examPassed?'15px':'11px'};">${icon}</div>
+ <div class="courseInfo">
+ <div class="courseTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+ <div class="courseMeta">${examPassed ? t('completed') : (pct>0 ? t('in_progress') : t('not_started'))}</div>
+ <div class="progressBarOuter"><div class="progressBarInner" style="width:${pct}%;"></div></div>
+ </div>
+ <div class="courseArrow">›</div>
+ </div>`;
+ });
+ c.innerHTML = html;
+}
+
+function openCourse(courseId){
+ STATE.currentCourse = courseId;
+ renderPage();
+}
+
+/* ====================================================================
+ COURSE DETAIL — Video Player + Progress Tracking
+ ==================================================================== */
+let videoPollTimer = null;
+let videoWatchSeconds = 0;
+let videoStartTimestamp = null;
+
+function findCourseObj(courseId){
+ for(const deptId in STATE.courses){
+ if(STATE.courses[deptId][courseId]) return {...STATE.courses[deptId][courseId], id:courseId, deptId};
+ }
+ return null;
+}
+
+function renderCourseDetail(c){
+ const course = findCourseObj(STATE.currentCourse);
+ if(!course){ STATE.currentCourse=null; STATE.currentDept=null; renderPage(); return; }
+
+ const myProgress = ((STATE.progress[STATE.user.username]||{})[course.id]) || {};
+ const pct = Math.min(100, Math.round(myProgress.percent||0));
+ const examUnlocked = pct >= 60;
+ const examPassed = !!myProgress.examPassed;
+ const failStreak = myProgress.failStreak || 0;
+
+ let html = `<button class="backBtn" onclick="stopVideoTracking(); STATE.currentCourse=null; renderPage();">‹ ${t('back')}</button>`;
+ html += `<div class="sectionTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>`;
+
+ html += `<div class="videoWrap" id="videoWrap">
+ <iframe id="courseVideo" src="https://drive.google.com/file/d/${course.driveFileId}/preview" allow="autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe>
+ </div>`;
+
+ html += `<div class="watchStats">
+ <span>${t('progress_pct')}: <b id="pctLabel">${pct}%</b></span>
+ <span>${t('video_progress_note')}</span>
+ </div>`;
+ html += `<div class="progressBarOuter" style="height:8px;margin-bottom:18px;"><div class="progressBarInner" id="pctBar" style="width:${pct}%;"></div></div>`;
+
+ if(examPassed){
+ html += `<div class="card" style="text-align:center;">
+ <div style="font-size:30px;"></div>
+ <div style="font-weight:800;color:var(--green);margin-top:6px;">${t('exam_passed_badge')}</div>
+ </div>`;
+ } else if(examUnlocked){
+ html += `<button class="btn btn-teal btn-block" onclick="openExamIntro('${course.id}')">${t('take_exam')}</button>`;
+ } else {
+ html += `<button class="btn btn-gray btn-block" disabled>${t('exam_locked')}</button>`;
+ }
+
+ c.innerHTML = html;
+ startVideoTracking(course.id, course.durationSec||600, myProgress.watchedSec||0);
+}
+
+function startVideoTracking(courseId, durationSec, alreadyWatched){
+ stopVideoTracking();
+ videoWatchSeconds = alreadyWatched || 0;
+ videoStartTimestamp = Date.now();
+
+ videoPollTimer = setInterval(()=>{
+ // Increment watched time by real elapsed seconds (capped to duration)
+ videoWatchSeconds = Math.min(durationSec, videoWatchSeconds + 1);
+ const pct = durationSec>0 ? Math.min(100, (videoWatchSeconds/durationSec)*100) : 0;
+
+ const pctBar = document.getElementById('pctBar');
+ const pctLabel = document.getElementById('pctLabel');
+ if(pctBar) pctBar.style.width = pct+'%';
+ if(pctLabel) pctLabel.textContent = Math.round(pct)+'%';
+
+ // push to Firebase every 5s to respect rate limits, not every second
+ if(videoWatchSeconds % 5 === 0 || pct>=60){
+ saveVideoProgress(courseId, videoWatchSeconds, pct);
+ }
+ if(pct>=60){
+ // unlock exam button live without full re-render spam
+ const detail = document.querySelector('#mainContent');
+ if(detail && !detail.querySelector('.btn-teal[onclick*="openExamIntro"]') && STATE.currentCourse===courseId){
+ renderPage();
+ }
+ }
+ }, 1000);
+}
+
+function stopVideoTracking(){
+ if(videoPollTimer){ clearInterval(videoPollTimer); videoPollTimer=null; }
+}
+
+function saveVideoProgress(courseId, watchedSec, pct){
+ const ref = db.ref(`progress/${STATE.user.username}/${courseId}`);
+ ref.update({
+ watchedSec: Math.round(watchedSec),
+ percent: Math.round(pct*10)/10,
+ completed: pct>=60,
+ lastUpdated: firebase.database.ServerValue.TIMESTAMP
+ });
+}
+
+function resetCourseProgress(courseId, reason){
+ const ref = db.ref(`progress/${STATE.user.username}/${courseId}`);
+ ref.update({
+ watchedSec: 0,
+ percent: 0,
+ completed: false,
+ lastUpdated: firebase.database.ServerValue.TIMESTAMP
+ });
+ videoWatchSeconds = 0;
+}
+
+/* ====================================================================
+ EXAM ENGINE
+ ==================================================================== */
+function openExamIntro(courseId){
+ const course = findCourseObj(courseId);
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'examIntroModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalIcon"></div>
+ <div class="modalTitle">${t('exam_instructions')}</div>
+ <div class="modalText" style="text-align:left;">
+ • ${t('exam_rule1')}<br>
+ • ${t('exam_rule2')}<br>
+ • ${t('exam_rule3')}<br>
+ • ${t('exam_rule4')}<br>
+ • ${t('exam_rule5')}
+ </div>
+ <div class="modalActions">
+ <button class="btn btn-gray" onclick="document.getElementById('examIntroModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-teal" onclick="document.getElementById('examIntroModal').remove(); startExam('${courseId}')">${t('begin')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function shuffleArray(arr){
+ const a = [...arr];
+ for(let i=a.length-1;i>0;i--){
+ const j = Math.floor(Math.random()*(i+1));
+ [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function startExam(courseId){
+ const bank = STATE.questionBanks[courseId] || {};
+ let allQ = Object.keys(bank).map(id=>({id, ...bank[id]}));
+ if(allQ.length === 0){
+ showToast(LANG==='th'?'ยังไม่มีคำถามในคอร์สนี้':'No questions available for this course');
+ return;
+ }
+ const picked = shuffleArray(allQ).slice(0, Math.min(10, allQ.length));
+ // shuffle choices per question, track new correct index
+ const questions = picked.map(q=>{
+ if(q.type === 'truefalse'){
+ return {...q, choicesShuffled: LANG==='th'?['ถูก','ผิด']:['True','False'], correctShuffled: q.correctIndex};
+ }
+ const choicesTH = q.choicesTH||[];
+ const choicesEN = q.choicesEN||[];
+ const idxArr = choicesTH.map((_,i)=>i);
+ const shuffledIdx = shuffleArray(idxArr);
+ return {
+ ...q,
+ choicesShuffledTH: shuffledIdx.map(i=>choicesTH[i]),
+ choicesShuffledEN: shuffledIdx.map(i=>choicesEN[i]),
+ correctShuffled: shuffledIdx.indexOf(q.correctIndex)
+ };
+ });
+
+ STATE.examSession = {
+ courseId,
+ questions,
+ currentIdx: 0,
+ answers: new Array(questions.length).fill(null),
+ tabSwitchCount: 0,
+ cheatDetected: false,
+ startTime: Date.now(),
+ timeUsedSec: 0,
+ perQuestionTimer: null,
+ timeLeft: 20
+ };
+
+ attachExamGuards();
+ renderExamQuestion();
+}
+
+function renderExamQuestion(){
+ const c = document.getElementById('mainContent');
+ const s = STATE.examSession;
+ const q = s.questions[s.currentIdx];
+ s.timeLeft = 20;
+
+ let choicesHtml = '';
+ if(q.type === 'truefalse'){
+ q.choicesShuffled.forEach((choice, idx)=>{
+ const sel = s.answers[s.currentIdx]===idx;
+ choicesHtml += `<button class="choiceBtn ${sel?'selected':''}" onclick="selectAnswer(${idx})">${escapeHtml(choice)}</button>`;
+ });
+ } else {
+ const choices = LANG==='th' ? q.choicesShuffledTH : q.choicesShuffledEN;
+ choices.forEach((choice, idx)=>{
+ const sel = s.answers[s.currentIdx]===idx;
+ const letter = String.fromCharCode(65+idx);
+ choicesHtml += `<button class="choiceBtn ${sel?'selected':''}" onclick="selectAnswer(${idx})">${letter}. ${escapeHtml(choice)}</button>`;
+ });
+ }
+
+ c.innerHTML = `
+ <div class="examHeader">
+ <div class="qProgress">${t('question')} ${s.currentIdx+1} / ${s.questions.length}</div>
+ <div class="timerBox" id="examTimer">${s.timeLeft}</div>
+ </div>
+ <div class="questionCard">
+ <div class="questionText">${escapeHtml(LANG==='th'?q.questionTH:q.questionEN)}</div>
+ <div id="choicesArea">${choicesHtml}</div>
+ </div>
+ <div style="display:flex;gap:10px;margin-top:16px;">
+ <button class="btn btn-teal btn-block" id="examNextBtn" onclick="nextQuestion()" ${s.answers[s.currentIdx]===null?'disabled':''}>
+ ${s.currentIdx === s.questions.length-1 ? t('submit_exam') : '→'}
+ </button>
+ </div>`;
+
+ startQuestionTimer();
+}
+
+function selectAnswer(idx){
+ STATE.examSession.answers[STATE.examSession.currentIdx] = idx;
+ document.querySelectorAll('#choicesArea .choiceBtn').forEach((btn,i)=>{
+ btn.classList.toggle('selected', i===idx);
+ });
+ document.getElementById('examNextBtn').disabled = false;
+}
+
+function startQuestionTimer(){
+ clearInterval(STATE.examSession.perQuestionTimer);
+ const timerEl = document.getElementById('examTimer');
+ STATE.examSession.perQuestionTimer = setInterval(()=>{
+ STATE.examSession.timeLeft--;
+ STATE.examSession.timeUsedSec++;
+ const el = document.getElementById('examTimer');
+ if(el){
+ el.textContent = STATE.examSession.timeLeft;
+ el.classList.toggle('warn', STATE.examSession.timeLeft<=5);
+ }
+ if(STATE.examSession.timeLeft<=0){
+ clearInterval(STATE.examSession.perQuestionTimer);
+ // auto move to next (counts as no-answer if unselected)
+ nextQuestion(true);
+ }
+ }, 1000);
+}
+
+function nextQuestion(forced){
+ clearInterval(STATE.examSession.perQuestionTimer);
+ const s = STATE.examSession;
+ if(!forced && s.answers[s.currentIdx]===null) return;
+
+ if(s.currentIdx < s.questions.length - 1){
+ s.currentIdx++;
+ renderExamQuestion();
+ } else {
+ confirmSubmitExam();
+ }
+}
+
+function confirmSubmitExam(){
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'confirmSubmitModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalTitle">${t('confirm_submit')}</div>
+ <div class="modalText">${t('confirm_submit_text')}</div>
+ <div class="modalActions">
+ <button class="btn btn-gray" onclick="document.getElementById('confirmSubmitModal').remove()">${t('no_back')}</button>
+ <button class="btn btn-teal" onclick="document.getElementById('confirmSubmitModal').remove(); submitExam();">${t('yes_submit')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function submitExam(){
+ const s = STATE.examSession;
+ clearInterval(s.perQuestionTimer);
+ detachExamGuards();
+
+ let correctCount = 0;
+ s.questions.forEach((q, idx)=>{
+ if(s.answers[idx] === q.correctShuffled) correctCount++;
+ });
+ const scorePct = Math.round((correctCount / s.questions.length) * 100);
+ const passed = !s.cheatDetected && scorePct >= 80;
+
+ const attemptId = genId();
+ const logEntry = {
+ score: scorePct,
+ totalQuestions: s.questions.length,
+ correctCount,
+ timeUsedSec: s.timeUsedSec,
+ passed,
+ tabSwitchCount: s.tabSwitchCount,
+ cheatDetected: s.cheatDetected,
+ timestamp: firebase.database.ServerValue.TIMESTAMP
+ };
+ db.ref(`examLogs/${STATE.user.username}/${s.courseId}/${attemptId}`).set(logEntry);
+
+ const progRef = db.ref(`progress/${STATE.user.username}/${s.courseId}`);
+ progRef.once('value').then(snap=>{
+ const cur = snap.val() || {};
+ const attempts = (cur.examAttempts||0) + 1;
+ let newFailStreak = cur.failStreak || 0;
+
+ if(passed){
+ progRef.update({
+ examPassed:true, examAttempts:attempts, bestScore: Math.max(cur.bestScore||0, scorePct), failStreak:0,
+ lastUpdated: firebase.database.ServerValue.TIMESTAMP
+ });
+ } else {
+ newFailStreak++;
+ if(newFailStreak >= 2 || s.cheatDetected){
+ // reset video progress to 0
+ progRef.update({
+ examAttempts:attempts, failStreak:0, watchedSec:0, percent:0, completed:false,
+ lastUpdated: firebase.database.ServerValue.TIMESTAMP
+ });
+ } else {
+ progRef.update({ examAttempts:attempts, failStreak:newFailStreak, lastUpdated: firebase.database.ServerValue.TIMESTAMP });
+ }
+ }
+ renderExamResult(scorePct, passed, correctCount, s.questions.length, newFailStreak>=2);
+ });
+}
+
+function renderExamResult(scorePct, passed, correct, total, wasReset){
+ const c = document.getElementById('mainContent');
+ c.innerHTML = `
+ <div class="card" style="text-align:center;padding:32px 20px;">
+ <div style="font-size:50px;">${passed?'':''}</div>
+ <div style="font-size:18px;font-weight:800;margin:10px 0 4px;color:${passed?'var(--green)':'var(--red)'};">
+ ${passed ? t('pass') : t('fail')}
+ </div>
+ <div style="font-size:13px;color:var(--gray);margin-bottom:18px;">${t('exam_result')}</div>
+ <div style="font-size:38px;font-weight:800;color:var(--navy);">${scorePct}%</div>
+ <div style="font-size:13px;color:var(--gray);margin-bottom:20px;">${correct} / ${total} ${t('your_score')}</div>
+ ${wasReset ? `<div class="modalText" style="color:var(--red);font-weight:700;margin-bottom:16px;">${t('reset_warning_text')}</div>` : ''}
+ <button class="btn btn-teal btn-block" onclick="STATE.currentCourse=null; goPage('lessons');">${t('back_lessons')}</button>
+ </div>`;
+}
+
+/* ====================================================================
+ ANTI-CHEAT GUARDS
+ ==================================================================== */
+let cheatHandlersBound = false;
+
+function attachExamGuards(){
+ if(cheatHandlersBound) return;
+ cheatHandlersBound = true;
+ document.addEventListener('visibilitychange', handleVisibilityChange);
+ window.addEventListener('blur', handleWindowBlur);
+ document.addEventListener('contextmenu', blockContextMenu);
+ document.addEventListener('copy', blockCopy);
+ document.addEventListener('cut', blockCopy);
+ document.addEventListener('selectstart', blockSelect);
+ document.addEventListener('keydown', blockDevToolsKeys);
+}
+
+function detachExamGuards(){
+ if(!cheatHandlersBound) return;
+ cheatHandlersBound = false;
+ document.removeEventListener('visibilitychange', handleVisibilityChange);
+ window.removeEventListener('blur', handleWindowBlur);
+ document.removeEventListener('contextmenu', blockContextMenu);
+ document.removeEventListener('copy', blockCopy);
+ document.removeEventListener('cut', blockCopy);
+ document.removeEventListener('selectstart', blockSelect);
+ document.removeEventListener('keydown', blockDevToolsKeys);
+}
+
+function blockContextMenu(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockCopy(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockSelect(e){ if(STATE.examSession){ e.preventDefault(); } }
+function blockDevToolsKeys(e){
+ if(!STATE.examSession) return;
+ // Block common copy / devtools shortcuts during exam
+ const k = e.key.toLowerCase();
+ if((e.ctrlKey||e.metaKey) && ['c','x','u','s','p'].includes(k)){ e.preventDefault(); }
+ if(k === 'f12'){ e.preventDefault(); }
+}
+
+let lastBlurTime = 0;
+function handleWindowBlur(){
+ if(!STATE.examSession) return;
+ registerTabSwitch();
+}
+function handleVisibilityChange(){
+ if(!STATE.examSession) return;
+ if(document.hidden){ registerTabSwitch(); }
+}
+
+function registerTabSwitch(){
+ const now = Date.now();
+ if(now - lastBlurTime < 1500) return; // debounce duplicate events
+ lastBlurTime = now;
+
+ const s = STATE.examSession;
+ if(!s) return;
+ s.tabSwitchCount++;
+
+ const logId = genId();
+ db.ref(`cheatLog/${logId}`).set({
+ username: STATE.user.username,
+ nameEN: STATE.user.nameEN,
+ nameTH: STATE.user.nameTH,
+ courseId: s.courseId,
+ type: s.tabSwitchCount>=2 ? 'auto_fail' : 'tab_switch_warning',
+ timestamp: firebase.database.ServerValue.TIMESTAMP
+ });
+
+ if(s.tabSwitchCount === 1){
+ showCheatWarningModal();
+ } else if(s.tabSwitchCount >= 2){
+ s.cheatDetected = true;
+ showCheatFailModal();
+ }
+}
+
+function showCheatWarningModal(){
+ clearInterval(STATE.examSession.perQuestionTimer);
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'cheatWarnModal';
+ modal.innerHTML = `
+ <div class="modalBox danger">
+ <div class="modalIcon"></div>
+ <div class="modalTitle danger">${t('tab_warning_title')}</div>
+ <div class="modalText">${t('tab_warning_text')}</div>
+ <div class="modalActions">
+ <button class="btn btn-red btn-block" onclick="ackCheatWarning()">${t('ack')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function ackCheatWarning(){
+ document.getElementById('cheatWarnModal').remove();
+ if(STATE.examSession){
+ startQuestionTimer();
+ }
+}
+
+function showCheatFailModal(){
+ clearInterval(STATE.examSession.perQuestionTimer);
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'cheatFailModal';
+ modal.innerHTML = `
+ <div class="modalBox danger">
+ <div class="modalIcon"></div>
+ <div class="modalTitle danger">${t('cheat_title')}</div>
+ <div class="modalText">${t('cheat_text')}</div>
+ <div class="modalActions">
+ <button class="btn btn-red btn-block" onclick="document.getElementById('cheatFailModal').remove(); forceFailExam();">${t('ack')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function forceFailExam(){
+ // submitExam() reads s.cheatDetected (already true) -> passed=false, triggers reset
+ submitExam();
+}
+
+/* ====================================================================
+ HISTORY PAGE (Staff's own learning history)
+ ==================================================================== */
+function getRequiredCoursesForUser(user){
+ const result = [];
+ Object.keys(STATE.courses).forEach(deptId=>{
+ Object.keys(STATE.courses[deptId]).forEach(courseId=>{
+ const course = STATE.courses[deptId][courseId];
+ if(course.active===false) return;
+ const reqLevels = course.requiredLevel || [];
+ const reqDepts = course.requiredDept || [];
+ const matchDept = reqDepts.length===0 || reqDepts.includes(user.department) || reqDepts.includes('ALL');
+ const matchLevel = reqLevels.length===0 || reqLevels.includes(user.level) || reqLevels.includes('ALL');
+ if(matchDept && matchLevel){
+ result.push({...course, id:courseId, deptId});
+ }
+ });
+ });
+ return result;
+}
+
+function renderHistoryPage(c){
+ const required = getRequiredCoursesForUser(STATE.user);
+ const myProgress = STATE.progress[STATE.user.username] || {};
+ const myExamLogs = STATE.examLogs[STATE.user.username] || {};
+
+ const completedCount = required.filter(course => (myProgress[course.id]||{}).examPassed).length;
+ const totalCount = required.length;
+ const pct = totalCount>0 ? Math.round((completedCount/totalCount)*100) : 0;
+
+ let html = `<div class="sectionTitle">${t('history_title')}</div>`;
+ html += `<div class="statGrid">
+ <div class="statBox"><div class="statNum">${totalCount}</div><div class="statLabel">${t('total_required')}</div></div>
+ <div class="statBox"><div class="statNum" style="color:var(--green);">${completedCount}</div><div class="statLabel">${t('total_completed')}</div></div>
+ <div class="statBox"><div class="statNum" style="color:var(--teal);">${pct}%</div><div class="statLabel">${t('total_pct')}</div></div>
+ </div>`;
+
+ if(required.length===0){
+ html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_history')}</div>`;
+ }
+
+ required.forEach(course=>{
+ const p = myProgress[course.id] || {};
+ const logs = myExamLogs[course.id] || {};
+ const attempts = Object.values(logs);
+ const lastAttempt = attempts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0))[0];
+ const passed = !!p.examPassed;
+ const pctWatch = Math.round(p.percent||0);
+
+ let badge = `<span class="badge progress">${t('in_progress')}</span>`;
+ if(passed) badge = `<span class="badge pass">${t('pass')}</span>`;
+ else if(lastAttempt && !lastAttempt.passed) badge = `<span class="badge fail">${t('fail')}</span>`;
+
+ html += `<div class="historyRow">
+ <div class="hLeft">
+ <div class="hTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+ <div class="hMeta">
+ ${t('progress_pct')}: ${pctWatch}%
+ ${lastAttempt ? ` · ${t('attempts')}: ${attempts.length} · ${t('time_used')}: ${fmtTime(lastAttempt.timeUsedSec)}` : ''}
+ ${lastAttempt && lastAttempt.tabSwitchCount>0 ? ` · ${t('tab_switches')}: ${lastAttempt.tabSwitchCount}` : ''}
+ </div>
+ </div>
+ ${badge}
+ </div>`;
+ });
+
+ c.innerHTML = html;
+}
+
+/* ====================================================================
+ ADMIN DASHBOARD — Shell + Overview
+ ==================================================================== */
+let adminTab = 'overview';
+
+function renderAdminPage(c){
+ const tabs = [
+ {id:'overview', label: LANG==='th'?'ภาพรวม':'Overview'},
+ {id:'staff', label: t('tab_staff')},
+ {id:'courses', label: t('tab_courses')},
+ {id:'questions', label: t('tab_questions')},
+ {id:'logs', label: t('tab_logs')},
+ {id:'settings', label: t('tab_settings')}
+ ];
+ let html = `<div class="sectionTitle">${t('admin_title')}</div>`;
+ html += `<div class="adminTabs">`;
+ tabs.forEach(tab=>{
+ html += `<button class="adminTab ${adminTab===tab.id?'active':''}" onclick="adminTab='${tab.id}'; renderPage();">${tab.label}</button>`;
+ });
+ html += `</div><div id="adminTabContent"></div>`;
+ c.innerHTML = html;
+
+ const tc = document.getElementById('adminTabContent');
+ if(adminTab==='overview') renderAdminOverview(tc);
+ if(adminTab==='staff') renderAdminStaff(tc);
+ if(adminTab==='courses') renderAdminCourses(tc);
+ if(adminTab==='questions') renderAdminQuestions(tc);
+ if(adminTab==='logs') renderAdminLogs(tc);
+ if(adminTab==='settings') renderAdminSettings(tc);
+}
+
+function renderAdminOverview(c){
+ const totalStaff = Object.keys(STATE.users).filter(u=>STATE.users[u].role!=='admin').length;
+ let totalCourses = 0;
+ Object.values(STATE.courses).forEach(d=>{ totalCourses += Object.keys(d).length; });
+
+ let totalExams = 0;
+ Object.values(STATE.examLogs).forEach(userLogs=>{
+ Object.values(userLogs).forEach(courseLogs=>{
+ totalExams += Object.keys(courseLogs).length;
+ });
+ });
+
+ const cheatCount = Object.values(STATE.cheatLog).filter(l=>l.type==='auto_fail').length;
+
+ c.innerHTML = `
+ <div class="statGrid">
+ <div class="statBox"><div class="statNum">${totalStaff}</div><div class="statLabel">${t('total_staff')}</div></div>
+ <div class="statBox"><div class="statNum">${totalCourses}</div><div class="statLabel">${t('total_courses')}</div></div>
+ <div class="statBox"><div class="statNum">${totalExams}</div><div class="statLabel">${t('total_exams')}</div></div>
+ </div>
+ <div class="statGrid" style="grid-template-columns:1fr;">
+ <div class="statBox" style="text-align:left;display:flex;align-items:center;justify-content:space-between;padding:16px;">
+ <div>
+ <div class="statLabel">${t('cheat_count')}</div>
+ <div class="statNum" style="color:var(--red);">${cheatCount}</div>
+ </div>
+ <div style="font-size:30px;"></div>
+ </div>
+ </div>`;
+}
+
+/* ====================================================================
+ ADMIN — STAFF MANAGEMENT
+ ==================================================================== */
+const DEPT_LIST_FALLBACK = ['HR','FO','FBS','FBK','Sports','Spa','Cafe','AC','Sales','ENG','Executive'];
+
+function renderAdminStaff(c){
+ const users = Object.keys(STATE.users).map(u=>({username:u, ...STATE.users[u]}));
+ let html = `<button class="btn btn-teal" style="margin-bottom:14px;" onclick="openStaffForm()">+ ${t('add_staff')}</button>`;
+ html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+ <th>${t('name_th')}</th><th>${t('username')}</th><th>${t('department')}</th><th>${t('level')}</th><th>${t('role')}</th><th></th>
+ </tr></thead><tbody>`;
+ users.forEach(u=>{
+ html += `<tr>
+ <td>${escapeHtml(u.nameTH)}<br><span style="color:var(--gray);font-size:10.5px;">${escapeHtml(u.nameEN||'')}</span></td>
+ <td>${escapeHtml(u.username)}</td>
+ <td>${escapeHtml(u.department||'-')}</td>
+ <td>${escapeHtml(u.level||'-')}</td>
+ <td>${u.role==='admin'?t('admin_role'):t('staff_role')}</td>
+ <td style="white-space:nowrap;">
+ <button class="miniBtn btn-outline" onclick='openStaffForm(${JSON.stringify(u.username)})'>${t('edit')}</button>
+ <button class="miniBtn btn-red" onclick="confirmDeleteStaff('${u.username}')">${t('delete')}</button>
+ </td>
+ </tr>`;
+ });
+ html += `</tbody></table></div>`;
+ c.innerHTML = html;
+}
+
+function openStaffForm(username){
+ const existing = username ? STATE.users[username] : null;
+ const deptOptions = Object.keys(STATE.departments).length>0
+ ? Object.keys(STATE.departments).map(id=>STATE.departments[id].nameEN || id)
+ : DEPT_LIST_FALLBACK;
+
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'staffFormModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalTitle">${existing ? t('edit') : t('add_staff')}</div>
+ <div class="formGrid">
+ <div class="inputGroup full"><label>${t('name_th')}</label><input id="f_nameTH" value="${escapeHtml(existing?.nameTH||'')}"></div>
+ <div class="inputGroup full"><label>${t('name_en')}</label><input id="f_nameEN" value="${escapeHtml(existing?.nameEN||'')}"></div>
+ <div class="inputGroup"><label>${t('username')}</label><input id="f_username" value="${escapeHtml(username||'')}" ${existing?'disabled':''}></div>
+ <div class="inputGroup"><label>${t('password')}</label><input id="f_password" value="${escapeHtml(existing?.password||'')}" placeholder="e.g. ab12"></div>
+ <div class="inputGroup">
+ <label>${t('department')}</label>
+ <select id="f_department">
+ ${deptOptions.map(d=>`<option value="${escapeHtml(d)}" ${existing?.department===d?'selected':''}>${escapeHtml(d)}</option>`).join('')}
+ <option value="ALL" ${existing?.department==='ALL'?'selected':''}>ALL</option>
+ </select>
+ </div>
+ <div class="inputGroup"><label>${t('level')}</label><input id="f_level" value="${escapeHtml(existing?.level||'1')}"></div>
+ <div class="inputGroup full">
+ <label>${t('role')}</label>
+ <select id="f_role">
+ <option value="staff" ${existing?.role!=='admin'?'selected':''}>${t('staff_role')}</option>
+ <option value="admin" ${existing?.role==='admin'?'selected':''}>${t('admin_role')}</option>
+ </select>
+ </div>
+ </div>
+ <div class="modalActions" style="margin-top:16px;">
+ <button class="btn btn-gray" onclick="document.getElementById('staffFormModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-teal" onclick="saveStaffForm(${JSON.stringify(username||null)})">${t('save')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function saveStaffForm(existingUsername){
+ const nameTH = document.getElementById('f_nameTH').value.trim();
+ const nameEN = document.getElementById('f_nameEN').value.trim();
+ const username = existingUsername || document.getElementById('f_username').value.trim();
+ const password = document.getElementById('f_password').value.trim();
+ const department = document.getElementById('f_department').value;
+ const level = document.getElementById('f_level').value.trim();
+ const role = document.getElementById('f_role').value;
+
+ if(!nameTH || !nameEN || !username || !password || !department || !level){
+ showToast(t('field_required')); return;
+ }
+ const hasLetter = /[a-zA-Z]/.test(password);
+ const hasNumber = /[0-9]/.test(password);
+ if(password.length < 4 || !hasLetter || !hasNumber){
+ showToast(t('pass_min_len')); return;
+ }
+
+ db.ref('users/'+username).set({
+ nameTH, nameEN, username, password, department, level, role, active:true
+ }).then(()=>{
+ document.getElementById('staffFormModal').remove();
+ showToast(t('save')+' ✓');
+ });
+}
+
+function confirmDeleteStaff(username){
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'delConfirmModal';
+ modal.innerHTML = `
+ <div class="modalBox danger">
+ <div class="modalTitle danger">${t('confirm_delete')}</div>
+ <div class="modalText">${t('confirm_delete_text')}<br><b>${escapeHtml(username)}</b></div>
+ <div class="modalActions">
+ <button class="btn btn-gray" onclick="document.getElementById('delConfirmModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-red" onclick="db.ref('users/${username}').remove().then(()=>{document.getElementById('delConfirmModal').remove(); showToast('${t('delete')} ✓');})">${t('delete')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+/* ====================================================================
+ ADMIN — DEPARTMENTS & COURSES MANAGEMENT
+ ==================================================================== */
+function renderAdminCourses(c){
+ const depts = Object.keys(STATE.departments).map(id=>({id, ...STATE.departments[id]})).sort((a,b)=>(a.order||0)-(b.order||0));
+
+ let html = `<button class="btn btn-teal" style="margin-bottom:14px;" onclick="openDeptForm()">+ ${t('add_dept')}</button>`;
+
+ depts.forEach(d=>{
+ const courses = getDeptCourses(d.id);
+ html += `<div class="card">
+ <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+ <div style="font-weight:800;color:var(--navy);">${d.icon||''} ${escapeHtml(LANG==='th'?d.nameTH:d.nameEN)}</div>
+ <div>
+ <button class="miniBtn btn-outline" onclick='openDeptForm(${JSON.stringify(d.id)})'>${t('edit')}</button>
+ <button class="miniBtn btn-red" onclick="confirmDeleteDept('${d.id}')">${t('delete')}</button>
+ </div>
+ </div>
+ ${courses.map(course=>`
+ <div class="historyRow">
+ <div class="hLeft">
+ <div class="hTitle">${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</div>
+ <div class="hMeta">${course.durationSec||0}s · Drive: ${escapeHtml(course.driveFileId||'-')}</div>
+ </div>
+ <div>
+ <button class="miniBtn btn-outline" onclick='openCourseForm(${JSON.stringify(d.id)}, ${JSON.stringify(course.id)})'>${t('edit')}</button>
+ <button class="miniBtn btn-red" onclick="confirmDeleteCourse('${d.id}','${course.id}')">${t('delete')}</button>
+ </div>
+ </div>
+ `).join('')}
+ <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick='openCourseForm(${JSON.stringify(d.id)})'>+ ${t('add_course')}</button>
+ </div>`;
+ });
+
+ c.innerHTML = html;
+}
+
+function openDeptForm(deptId){
+ const existing = deptId ? STATE.departments[deptId] : null;
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'deptFormModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalTitle">${existing ? t('edit') : t('add_dept')}</div>
+ <div class="inputGroup"><label>${t('dept_icon')}</label><input id="d_icon" value="${escapeHtml(existing?.icon||'')}"></div>
+ <div class="inputGroup"><label>${t('name_th')}</label><input id="d_nameTH" value="${escapeHtml(existing?.nameTH||'')}"></div>
+ <div class="inputGroup"><label>${t('name_en')}</label><input id="d_nameEN" value="${escapeHtml(existing?.nameEN||'')}"></div>
+ <div class="modalActions" style="margin-top:10px;">
+ <button class="btn btn-gray" onclick="document.getElementById('deptFormModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-teal" onclick="saveDeptForm(${JSON.stringify(deptId||null)})">${t('save')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function saveDeptForm(existingId){
+ const icon = document.getElementById('d_icon').value.trim();
+ const nameTH = document.getElementById('d_nameTH').value.trim();
+ const nameEN = document.getElementById('d_nameEN').value.trim();
+ if(!nameTH || !nameEN){ showToast(t('field_required')); return; }
+ const id = existingId || nameEN.replace(/\s+/g,'_');
+ db.ref('departments/'+id).set({
+ nameTH, nameEN, icon: icon||'', order: Object.keys(STATE.departments).length
+ }).then(()=>{
+ document.getElementById('deptFormModal').remove();
+ showToast(t('save')+' ✓');
+ });
+}
+
+function confirmDeleteDept(deptId){
+ if(!confirm(t('confirm_delete')+' '+t('confirm_delete_text'))) return;
+ db.ref('departments/'+deptId).remove();
+ db.ref('courses/'+deptId).remove();
+}
+
+function openCourseForm(deptId, courseId){
+ const existing = courseId ? STATE.courses[deptId][courseId] : null;
+ const levels = ['1','2','3','Manager','ALL'];
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'courseFormModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalTitle">${existing ? t('edit') : t('add_course')}</div>
+ <div class="inputGroup"><label>${t('course_title_th')}</label><input id="c_titleTH" value="${escapeHtml(existing?.titleTH||'')}"></div>
+ <div class="inputGroup"><label>${t('course_title_en')}</label><input id="c_titleEN" value="${escapeHtml(existing?.titleEN||'')}"></div>
+ <div class="inputGroup"><label>${t('drive_id')}</label><input id="c_driveId" value="${escapeHtml(existing?.driveFileId||'')}" placeholder="1A2b3C... (จาก URL ของไฟล์)"></div>
+ <div class="inputGroup"><label>${t('duration')}</label><input id="c_duration" type="number" value="${existing?.durationSec||600}"></div>
+ <div class="inputGroup">
+ <label>${t('required_for')} (${t('level')})</label>
+ <select id="c_reqLevel" multiple style="height:90px;">
+ ${levels.map(l=>`<option value="${l}" ${(existing?.requiredLevel||[]).includes(l)?'selected':''}>${l}</option>`).join('')}
+ </select>
+ </div>
+ <div class="modalActions" style="margin-top:10px;">
+ <button class="btn btn-gray" onclick="document.getElementById('courseFormModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-teal" onclick="saveCourseForm(${JSON.stringify(deptId)}, ${JSON.stringify(courseId||null)})">${t('save')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function saveCourseForm(deptId, existingCourseId){
+ const titleTH = document.getElementById('c_titleTH').value.trim();
+ const titleEN = document.getElementById('c_titleEN').value.trim();
+ const driveFileId = document.getElementById('c_driveId').value.trim();
+ const durationSec = parseInt(document.getElementById('c_duration').value) || 600;
+ const reqLevel = Array.from(document.getElementById('c_reqLevel').selectedOptions).map(o=>o.value);
+
+ if(!titleTH || !titleEN || !driveFileId){ showToast(t('field_required')); return; }
+
+ const id = existingCourseId || genId();
+ const existingOrder = existingCourseId ? (STATE.courses[deptId][existingCourseId].order||0) : getDeptCourses(deptId).length;
+
+ db.ref(`courses/${deptId}/${id}`).set({
+ titleTH, titleEN, driveFileId, durationSec, requiredLevel: reqLevel, requiredDept:[deptId],
+ order: existingOrder, active:true
+ }).then(()=>{
+ document.getElementById('courseFormModal').remove();
+ showToast(t('save')+' ✓');
+ });
+}
+
+function confirmDeleteCourse(deptId, courseId){
+ if(!confirm(t('confirm_delete')+' '+t('confirm_delete_text'))) return;
+ db.ref(`courses/${deptId}/${courseId}`).remove();
+ db.ref(`questionBanks/${courseId}`).remove();
+}
+
+/* ====================================================================
+ ADMIN — QUESTION BANK MANAGEMENT
+ ==================================================================== */
+let selectedQBCourse = null;
+
+function getAllCoursesFlat(){
+ const result = [];
+ Object.keys(STATE.courses).forEach(deptId=>{
+ Object.keys(STATE.courses[deptId]).forEach(courseId=>{
+ result.push({...STATE.courses[deptId][courseId], id:courseId, deptId});
+ });
+ });
+ return result;
+}
+
+function renderAdminQuestions(c){
+ const allCourses = getAllCoursesFlat();
+ if(!selectedQBCourse && allCourses.length>0) selectedQBCourse = allCourses[0].id;
+
+ let html = `<div class="inputGroup"><label>${t('select_course')}</label>
+ <select onchange="selectedQBCourse=this.value; renderPage();">
+ ${allCourses.map(course=>`<option value="${course.id}" ${selectedQBCourse===course.id?'selected':''}>${escapeHtml(LANG==='th'?course.titleTH:course.titleEN)}</option>`).join('')}
+ </select>
+ </div>`;
+
+ if(!selectedQBCourse){ c.innerHTML = html; return; }
+
+ const bank = STATE.questionBanks[selectedQBCourse] || {};
+ const questions = Object.keys(bank).map(id=>({id, ...bank[id]}));
+
+ html += `<button class="btn btn-teal" style="margin:10px 0 14px;" onclick="openQuestionForm('${selectedQBCourse}')">+ ${t('add_question')}</button>`;
+ html += `<div style="font-size:12px;color:var(--gray);margin-bottom:10px;">${questions.length} / 50 ${LANG==='th'?'ข้อ (แนะนำอย่างน้อย 50 ข้อ เพื่อสุ่ม 10 ข้อ)':'questions (50+ recommended for random pool of 10)'}</div>`;
+
+ questions.forEach((q, idx)=>{
+ const choices = q.type==='truefalse' ? (LANG==='th'?['ถูก','ผิด']:['True','False']) : (LANG==='th'?q.choicesTH:q.choicesEN)||[];
+ html += `<div class="card" style="padding:14px;">
+ <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+ <div style="flex:1;">
+ <div style="font-weight:700;font-size:13.5px;">${idx+1}. ${escapeHtml(LANG==='th'?q.questionTH:q.questionEN)}</div>
+ <div style="font-size:11.5px;color:var(--gray);margin-top:6px;">
+ ${choices.map((ch,i)=>`<div style="${i===q.correctIndex?'color:var(--green);font-weight:700;':''}">${String.fromCharCode(65+i)}. ${escapeHtml(ch)} ${i===q.correctIndex?'✓':''}</div>`).join('')}
+ </div>
+ </div>
+ <div style="white-space:nowrap;">
+ <button class="miniBtn btn-outline" onclick='openQuestionForm(${JSON.stringify(selectedQBCourse)}, ${JSON.stringify(q.id)})'>${t('edit')}</button>
+ <button class="miniBtn btn-red" onclick="confirmDeleteQuestion('${selectedQBCourse}','${q.id}')">${t('delete')}</button>
+ </div>
+ </div>
+ </div>`;
+ });
+
+ c.innerHTML = html;
+}
+
+function openQuestionForm(courseId, questionId){
+ const existing = questionId ? STATE.questionBanks[courseId][questionId] : null;
+ const type = existing?.type || 'mc';
+
+ const modal = document.createElement('div');
+ modal.className = 'modalOverlay';
+ modal.id = 'qFormModal';
+ modal.innerHTML = `
+ <div class="modalBox">
+ <div class="modalTitle">${existing ? t('edit') : t('add_question')}</div>
+ <div class="inputGroup">
+ <label>${t('question_type')}</label>
+ <select id="q_type" onchange="toggleQTypeFields()">
+ <option value="mc" ${type==='mc'?'selected':''}>${t('type_mc')}</option>
+ <option value="truefalse" ${type==='truefalse'?'selected':''}>${t('type_tf')}</option>
+ </select>
+ </div>
+ <div class="inputGroup"><label>${t('question_th')}</label><textarea id="q_questionTH">${escapeHtml(existing?.questionTH||'')}</textarea></div>
+ <div class="inputGroup"><label>${t('question_en')}</label><textarea id="q_questionEN">${escapeHtml(existing?.questionEN||'')}</textarea></div>
+
+ <div id="mcFields" class="${type==='truefalse'?'hidden':''}">
+ ${[0,1,2,3].map(i=>`
+ <div class="formGrid" style="margin-bottom:6px;">
+ <div class="inputGroup"><label>${t('choice')} ${String.fromCharCode(65+i)} (TH)</label><input id="q_choiceTH_${i}" value="${escapeHtml((existing?.choicesTH||[])[i]||'')}"></div>
+ <div class="inputGroup"><label>${t('choice')} ${String.fromCharCode(65+i)} (EN)</label><input id="q_choiceEN_${i}" value="${escapeHtml((existing?.choicesEN||[])[i]||'')}"></div>
+ </div>`).join('')}
+ </div>
+
+ <div class="inputGroup">
+ <label>${t('correct_answer')}</label>
+ <select id="q_correctIndex">
+ <option value="0" ${existing?.correctIndex===0?'selected':''}>${type==='truefalse'?(LANG==='th'?'ถูก':'True'):'A'}</option>
+ <option value="1" ${existing?.correctIndex===1?'selected':''}>${type==='truefalse'?(LANG==='th'?'ผิด':'False'):'B'}</option>
+ <option value="2" ${existing?.correctIndex===2?'selected':''} class="mcOnly">C</option>
+ <option value="3" ${existing?.correctIndex===3?'selected':''} class="mcOnly">D</option>
+ </select>
+ </div>
+
+ <div class="modalActions" style="margin-top:10px;">
+ <button class="btn btn-gray" onclick="document.getElementById('qFormModal').remove()">${t('cancel')}</button>
+ <button class="btn btn-teal" onclick="saveQuestionForm(${JSON.stringify(courseId)}, ${JSON.stringify(questionId||null)})">${t('save')}</button>
+ </div>
+ </div>`;
+ document.body.appendChild(modal);
+}
+
+function toggleQTypeFields(){
+ const type = document.getElementById('q_type').value;
+ document.getElementById('mcFields').classList.toggle('hidden', type==='truefalse');
+ document.querySelectorAll('.mcOnly').forEach(o=> o.style.display = type==='truefalse' ? 'none':'block');
+}
+
+function saveQuestionForm(courseId, existingId){
+ const type = document.getElementById('q_type').value;
+ const questionTH = document.getElementById('q_questionTH').value.trim();
+ const questionEN = document.getElementById('q_questionEN').value.trim();
+ const correctIndex = parseInt(document.getElementById('q_correctIndex').value);
+
+ if(!questionTH || !questionEN){ showToast(t('field_required')); return; }
+
+ const data = { type, questionTH, questionEN, correctIndex };
+
+ if(type==='mc'){
+ const choicesTH = [0,1,2,3].map(i=>document.getElementById('q_choiceTH_'+i).value.trim());
+ const choicesEN = [0,1,2,3].map(i=>document.getElementById('q_choiceEN_'+i).value.trim());
+ if(choicesTH.some(c=>!c) || choicesEN.some(c=>!c)){ showToast(t('field_required')); return; }
+ data.choicesTH = choicesTH;
+ data.choicesEN = choicesEN;
+ }
+
+ const id = existingId || genId();
+ db.ref(`questionBanks/${courseId}/${id}`).set(data).then(()=>{
+ document.getElementById('qFormModal').remove();
+ showToast(t('save')+' ✓');
+ });
+}
+
+function confirmDeleteQuestion(courseId, questionId){
+ if(!confirm(t('confirm_delete'))) return;
+ db.ref(`questionBanks/${courseId}/${questionId}`).remove();
+}
+
+/* ====================================================================
+ ADMIN — BEHAVIOR LOGS (Cheat Detection Dashboard)
+ ==================================================================== */
+function renderAdminLogs(c){
+ const logs = Object.keys(STATE.cheatLog).map(id=>({id, ...STATE.cheatLog[id]})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+
+ let html = `<div class="sectionTitle" style="font-size:14px;">${t('cheat_log_title')}</div>`;
+ if(logs.length===0){
+ html += `<div class="card" style="text-align:center;color:var(--gray);">${t('no_logs')}</div>`;
+ c.innerHTML = html;
+ return;
+ }
+
+ html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+ <th>${LANG==='th'?'พนักงาน':'Staff'}</th><th>${LANG==='th'?'คอร์ส':'Course'}</th><th>${LANG==='th'?'ประเภท':'Type'}</th><th>${LANG==='th'?'เวลา':'Time'}</th>
+ </tr></thead><tbody>`;
+
+ logs.forEach(l=>{
+ const course = findCourseObj(l.courseId);
+ const courseTitle = course ? (LANG==='th'?course.titleTH:course.titleEN) : l.courseId;
+ const isFail = l.type === 'auto_fail';
+ html += `<tr>
+ <td>${escapeHtml(LANG==='th'?l.nameTH:l.nameEN)}</td>
+ <td>${escapeHtml(courseTitle)}</td>
+ <td>${isFail ? `<span class="cheatTag">${LANG==='th'?'ทุจริต':'CHEAT'}</span>` : (LANG==='th'?'เตือน':'Warning')}</td>
+ <td>${fmtDate(l.timestamp)}</td>
+ </tr>`;
+ });
+ html += `</tbody></table></div>`;
+
+ // also show exam attempts summary (time used per attempt) for full transparency
+ html += `<div class="sectionTitle" style="font-size:14px;margin-top:20px;">${LANG==='th'?'ประวัติการสอบทั้งหมด':'All Exam Attempts'}</div>`;
+ html += `<div class="tableWrap"><table class="dataTable"><thead><tr>
+ <th>${LANG==='th'?'พนักงาน':'Staff'}</th><th>${LANG==='th'?'คอร์ส':'Course'}</th><th>${LANG==='th'?'คะแนน':'Score'}</th><th>${t('time_used')}</th><th>${t('tab_switches')}</th><th>${LANG==='th'?'ผล':'Result'}</th>
+ </tr></thead><tbody>`;
+
+ const allAttempts = [];
+ Object.keys(STATE.examLogs).forEach(username=>{
+ Object.keys(STATE.examLogs[username]||{}).forEach(courseId=>{
+ Object.values(STATE.examLogs[username][courseId]).forEach(att=>{
+ allAttempts.push({username, courseId, ...att});
+ });
+ });
+ });
+ allAttempts.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+
+ allAttempts.slice(0,100).forEach(att=>{
+ const user = STATE.users[att.username] || {};
+ const course = findCourseObj(att.courseId);
+ const courseTitle = course ? (LANG==='th'?course.titleTH:course.titleEN) : att.courseId;
+ html += `<tr>
+ <td>${escapeHtml(LANG==='th'?(user.nameTH||att.username):(user.nameEN||att.username))}</td>
+ <td>${escapeHtml(courseTitle)}</td>
+ <td>${att.score}%</td>
+ <td>${fmtTime(att.timeUsedSec)}</td>
+ <td>${att.tabSwitchCount||0}</td>
+ <td>${att.passed ? `<span class="badge pass">${t('pass')}</span>` : `<span class="badge fail">${t('fail')}</span>`}${att.cheatDetected?`<span class="cheatTag">${LANG==='th'?'ทุจริต':'CHEAT'}</span>`:''}</td>
+ </tr>`;
+ });
+ html += `</tbody></table></div>`;
+
+ c.innerHTML = html;
+}
+
+/* ====================================================================
+ ADMIN — SETTINGS (Google Sheet Sync via Apps Script)
+ ==================================================================== */
+function renderAdminSettings(c){
+ const savedGasUrl = localStorage.getItem('cch_gas_url')||'';
+ const savedSheetUrl = localStorage.getItem('cch_sheet_url')||'';
+ const savedCourseGasUrl = localStorage.getItem('cch_course_gas_url')||'';
+ const savedCourseSheetUrl = localStorage.getItem('cch_course_sheet_url')||'';
+ const sheetLink = savedSheetUrl ? `<a href="${escapeHtml(savedSheetUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;color:var(--teal);font-size:12.5px;font-weight:700;margin-bottom:10px;text-decoration:none;"> ${LANG==='th'?'เปิด Sheet พนักงาน':'Open Staff Sheet'} </a>` : '';
+ const courseSheetLink = savedCourseSheetUrl ? `<a href="${escapeHtml(savedCourseSheetUrl)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;color:var(--teal);font-size:12.5px;font-weight:700;margin-bottom:10px;text-decoration:none;"> ${LANG==='th'?'เปิด Sheet คอร์ส':'Open Course Sheet'} </a>` : '';
+
+ c.innerHTML = `
+ <div class="card">
+ <div style="font-weight:800;color:var(--navy);margin-bottom:4px;"> ${LANG==='th'?'ซิงค์รายชื่อพนักงาน':'Sync Staff List'}</div>
+ <div style="font-size:11px;color:var(--gray);margin-bottom:10px;font-family:monospace;background:var(--sand);padding:8px;border-radius:8px;">nameTH | nameEN | username | password | department | level | role | active</div>
+ <div class="inputGroup"><label> Sheet URL</label>
+ <input id="sheetUrlInput" value="${escapeHtml(savedSheetUrl)}" placeholder="https://docs.google.com/spreadsheets/d/..." style="font-size:12px;"></div>
+ ${sheetLink}
+ <div class="inputGroup"><label> Apps Script Web App URL</label>
+ <input id="gasUrlInput" value="${escapeHtml(savedGasUrl)}" placeholder="https://script.google.com/macros/s/XXXX/exec" style="font-size:12px;"></div>
+ <div style="display:flex;gap:8px;">
+ <button class="btn btn-gray" style="flex:1;font-size:13px;" onclick="saveSheetUrls()">${LANG==='th'?'บันทึก':'Save'}</button>
+ <button class="btn btn-teal" style="flex:1;font-size:13px;" onclick="syncFromGoogleSheet()"> ${LANG==='th'?'ซิงค์พนักงาน':'Sync Staff'}</button>
+ </div>
+ <div id="syncStatus" style="margin-top:8px;font-size:12px;color:var(--gray);"></div>
+ </div>
+
+ <div class="card">
+ <div style="font-weight:800;color:var(--navy);margin-bottom:4px;"> ${LANG==='th'?'ซิงค์คอร์สเรียน':'Sync Courses'}</div>
+ <div style="font-size:11px;color:var(--gray);margin-bottom:10px;font-family:monospace;background:var(--sand);padding:8px;border-radius:8px;">deptNameTH | deptNameEN | deptIcon | titleTH | titleEN | driveFileId | durationSec | requiredLevel</div>
+ <div class="inputGroup"><label> Sheet URL</label>
+ <input id="courseSheetUrlInput" value="${escapeHtml(savedCourseSheetUrl)}" placeholder="https://docs.google.com/spreadsheets/d/..." style="font-size:12px;"></div>
+ ${courseSheetLink}
+ <div class="inputGroup"><label> Apps Script Web App URL</label>
+ <input id="courseGasUrlInput" value="${escapeHtml(savedCourseGasUrl)}" placeholder="https://script.google.com/macros/s/XXXX/exec" style="font-size:12px;"></div>
+ <div style="display:flex;gap:8px;">
+ <button class="btn btn-gray" style="flex:1;font-size:13px;" onclick="saveSheetUrls()">${LANG==='th'?'บันทึก':'Save'}</button>
+ <button class="btn btn-teal" style="flex:1;font-size:13px;" onclick="syncCoursesFromSheet()"> ${LANG==='th'?'ซิงค์คอร์ส':'Sync Courses'}</button>
+ </div>
+ <div id="courseSyncStatus" style="margin-top:8px;font-size:12px;color:var(--gray);"></div>
+ </div>
+
+ <div class="card">
+ <div style="font-weight:800;color:var(--navy);margin-bottom:8px;">${LANG==='th'?'Export ประวัติการอบรม':'Export Training Records'}</div>
+ <div style="font-size:11.5px;color:var(--gray);margin-bottom:12px;">${LANG==='th'?'ดาวน์โหลด CSV ได้ทันที':'Download CSV instantly'}</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;">
+   <button class="btn btn-teal" style="flex:1;" onclick="exportAsCSV(buildExportRows())">${LANG==='th'?'Download CSV':'Download CSV'}</button>
+   <button class="btn btn-outline" style="flex:1;" onclick="exportAllToSheet()">${LANG==='th'?'ส่งไป Sheet':'Send to Sheet'}</button>
+ </div>
+ <div id="exportStatus" style="margin-top:8px;font-size:12px;color:var(--gray);"></div>
+ </div>
+
+ <div class="card">
+ <div style="font-weight:800;color:var(--navy);margin-bottom:6px;"> App Info</div>
+ <div style="font-size:12px;color:var(--gray);line-height:2;">Firebase: cch-academy (asia-southeast1)<br>Hosting: synder282061122.github.io/-cch-academy/</div>
+ </div>`;
+}
+
+function saveSheetUrls(){
+ const get = id => (document.getElementById(id)||{value:''}).value.trim();
+ const gasUrl = get('gasUrlInput');
+ const sheetUrl = get('sheetUrlInput');
+ const courseGasUrl = get('courseGasUrlInput');
+ const courseSheetUrl = get('courseSheetUrlInput');
+ // save เสมอ ถ้ามีค่า (ไม่ block ด้วย if)
+ if(gasUrl) localStorage.setItem('cch_gas_url', gasUrl);
+ if(sheetUrl) localStorage.setItem('cch_sheet_url', sheetUrl);
+ if(courseGasUrl) localStorage.setItem('cch_course_gas_url', courseGasUrl);
+ if(courseSheetUrl) localStorage.setItem('cch_course_sheet_url', courseSheetUrl);
+ showToast((LANG==='th'?'บันทึกแล้ว':'Saved')+' ✓');
+ // render หลัง microtask เพื่อให้ toast โชว์ก่อน
+ setTimeout(()=>renderPage(), 100);
+}
+
+function syncFromGoogleSheet(){
+ const inputEl = document.getElementById('gasUrlInput');
+ if(inputEl && inputEl.value.trim()) localStorage.setItem('cch_gas_url', inputEl.value.trim());
+ const url = localStorage.getItem('cch_gas_url')||'';
+ const statusEl = document.getElementById('syncStatus');
+ if(!url){ showToast(t('field_required')); return; }
+ if(statusEl) statusEl.textContent = t('syncing');
+
+ fetch(url)
+ .then(res=>res.json())
+ .then(rows=>{
+ // Expected columns: nameTH, nameEN, username, password, department, level
+ const updates = {};
+ rows.forEach(row=>{
+ if(!row.username) return;
+ updates['users/'+row.username] = {
+ nameTH: row.nameTH || '',
+ nameEN: row.nameEN || '',
+ username: row.username,
+ password: row.password || '1234',
+ department: row.department || '',
+ level: row.level || '1',
+ role: row.role === 'admin' ? 'admin' : 'staff',
+ active: row.active !== false && row.active !== 'FALSE'
+ };
+ });
+ return db.ref().update(updates);
+ })
+ .then(()=>{
+ db.ref('meta/lastSheetSync').set(firebase.database.ServerValue.TIMESTAMP);
+ statusEl.textContent = t('sync_done');
+ showToast(t('sync_done'));
+ })
+ .catch(err=>{
+ console.error(err);
+ statusEl.textContent = 'Error: '+err.message;
+ });
+}
+
+function syncCoursesFromSheet(){
+ const inputEl = document.getElementById('courseGasUrlInput');
+ if(inputEl && inputEl.value.trim()) localStorage.setItem('cch_course_gas_url', inputEl.value.trim());
+ const url = localStorage.getItem('cch_course_gas_url')||'';
+ const statusEl = document.getElementById('courseSyncStatus');
+ if(!url){ showToast(LANG==='th'?'กรุณาใส่ Apps Script URL ของคอร์สก่อน':'Please enter Course Apps Script URL'); return; }
+ if(statusEl) statusEl.textContent = LANG==='th'?'กำลังซิงค์...':'Syncing...';
+ fetch(url)
+ .then(res=>res.json())
+ .then(rows=>{
+ const deptMap={}, courseMap={};
+ rows.forEach((row,i)=>{
+ if(!row.titleEN && !row.titleTH) return;
+ const dk=(row.deptNameEN||'General').replace(/[^a-zA-Z0-9]/g,'_');
+ if(!deptMap[dk]){ const ex=STATE.departments[dk]||{}; deptMap[dk]={nameTH:row.deptNameTH||dk,nameEN:row.deptNameEN||dk,icon:row.deptIcon||'',order:ex.order!==undefined?ex.order:Object.keys(deptMap).length}; }
+ const ck='sh_'+(row.titleEN||row.titleTH||'').replace(/[^a-zA-Z0-9]/g,'').toLowerCase().slice(0,16)+'_'+i;
+ const reqLv=row.requiredLevel?String(row.requiredLevel).split(',').map(s=>s.trim()):['ALL'];
+ if(!courseMap[dk]) courseMap[dk]={};
+ courseMap[dk][ck]={titleTH:row.titleTH||row.titleEN||'',titleEN:row.titleEN||row.titleTH||'',driveFileId:row.driveFileId||'',durationSec:parseInt(row.durationSec)||600,requiredLevel:reqLv,requiredDept:[dk],order:Object.keys(courseMap[dk]).length,active:true};
+ });
+ const updates={};
+ Object.keys(deptMap).forEach(k=>{updates['departments/'+k]=deptMap[k];});
+ Object.keys(courseMap).forEach(dk=>{Object.keys(courseMap[dk]).forEach(ck=>{updates['courses/'+dk+'/'+ck]=courseMap[dk][ck];});});
+ return db.ref().update(updates);
+ })
+ .then(()=>{
+ db.ref('meta/lastSheetSync').set(firebase.database.ServerValue.TIMESTAMP);
+ const msg=(LANG==='th'?'ซิงค์คอร์สสำเร็จ':'Courses synced')+' ✓';
+ if(document.getElementById('courseSyncStatus')) document.getElementById('courseSyncStatus').textContent=msg;
+ showToast(msg);
+ })
+ .catch(err=>{if(document.getElementById('courseSyncStatus')) document.getElementById('courseSyncStatus').textContent='Error: '+err.message;});
+}
+/* ====================================================================
+   EXPORT DATA TO GOOGLE SHEET (via Apps Script)
+   ==================================================================== */
+function buildExportRows(){
+  const rows = [];
+  Object.keys(STATE.users).forEach(username=>{
+    const user = STATE.users[username]||{};
+    const prog = STATE.progress[username]||{};
+    const logs = STATE.examLogs[username]||{};
+    const courseIds = new Set([...Object.keys(prog),...Object.keys(logs)]);
+    if(!courseIds.size){ rows.push({username,nameTH:user.nameTH||'',nameEN:user.nameEN||'',department:user.department||'',level:user.level||'',courseId:'',courseTitleTH:'',courseTitleEN:'',watchPercent:0,examPassed:'',bestScore:'',examAttempts:0,tabSwitchCount:'',cheatDetected:'',lastUpdated:''}); return; }
+    courseIds.forEach(courseId=>{
+      const course=findCourseObj(courseId)||{};
+      const p=prog[courseId]||{};
+      const examArr=Object.values(logs[courseId]||{}).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+      const last=examArr[0]||{};
+      rows.push({username,nameTH:user.nameTH||'',nameEN:user.nameEN||'',department:user.department||'',level:user.level||'',courseId,courseTitleTH:course.titleTH||courseId,courseTitleEN:course.titleEN||courseId,watchPercent:Math.round(p.percent||0),examPassed:p.examPassed?'YES':'NO',bestScore:p.bestScore||0,examAttempts:p.examAttempts||0,tabSwitchCount:last.tabSwitchCount||0,cheatDetected:last.cheatDetected?'YES':'NO',lastUpdated:last.timestamp?new Date(last.timestamp).toLocaleString('th-TH'):''});
+    });
+  });
+  return rows;
+}
+
+function exportAllToSheet(){
+  const gasUrl = localStorage.getItem('cch_gas_url')||'';
+  const statusEl = document.getElementById('exportStatus');
+  if(!gasUrl){ showToast(LANG==='th'?'กรุณาบันทึก Apps Script URL ของพนักงานก่อน':'Please save Staff Apps Script URL first'); return; }
+  if(statusEl) statusEl.textContent = LANG==='th'?'กำลัง export...':'Exporting...';
+
+  const rows = buildExportRows();
+  if(!rows.length){ showToast(LANG==='th'?'ไม่มีข้อมูล':'No data'); return; }
+  // legacy placeholder
+  Object.keys({}).forEach(username=>{
+    const user = STATE.users[username]||{};
+    const prog = STATE.progress[username]||{};
+    const logs = STATE.examLogs[username]||{};
+
+    // get all courses this user has any progress in
+    const courseIds = new Set([...Object.keys(prog), ...Object.keys(logs)]);
+    if(courseIds.size === 0){
+      rows.push({
+        username, nameTH:user.nameTH||'', nameEN:user.nameEN||'',
+        department:user.department||'', level:user.level||'',
+        courseId:'', courseTitleTH:'', courseTitleEN:'',
+        watchPercent:0, examPassed:'', bestScore:'', examAttempts:0,
+        tabSwitchCount:'', cheatDetected:'', lastUpdated:''
+      });
+    } else {
+      courseIds.forEach(courseId=>{
+        const course = findCourseObj(courseId)||{};
+        const p = prog[courseId]||{};
+        const examArr = Object.values(logs[courseId]||{});
+        const lastExam = examArr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0))[0]||{};
+        rows.push({
+          username, nameTH:user.nameTH||'', nameEN:user.nameEN||'',
+          department:user.department||'', level:user.level||'',
+          courseId,
+          courseTitleTH:course.titleTH||courseId,
+          courseTitleEN:course.titleEN||courseId,
+          watchPercent:Math.round(p.percent||0),
+          examPassed:p.examPassed?'YES':'NO',
+          bestScore:p.bestScore||0,
+          examAttempts:p.examAttempts||0,
+          tabSwitchCount:lastExam.tabSwitchCount||0,
+          cheatDetected:lastExam.cheatDetected?'YES':'NO',
+          lastUpdated:lastExam.timestamp ? new Date(lastExam.timestamp).toLocaleString('th-TH') : ''
+        });
+      });
+    }
+  });
+
+  // send to GAS as export action
+  const exportUrl = gasUrl + (gasUrl.includes('?')?'&':'?') + 'action=export';
+  fetch(exportUrl, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action:'export', rows})
+  })
+  .then(res=>res.text())
+  .then(msg=>{
+    if(statusEl) statusEl.textContent = (LANG==='th'?'Export สำเร็จ':'Export done')+' ✓';
+    showToast((LANG==='th'?'Export สำเร็จ':'Export done')+' ✓');
+  })
+  .catch(err=>{
+    // GAS might return CORS error on POST but still process it
+    // fallback: open CSV download
+    exportAsCSV(rows);
+    if(statusEl) statusEl.textContent = LANG==='th'?'ดาวน์โหลด CSV แทน (CORS)':'Downloaded as CSV (CORS fallback)';
+  });
+}
+
+function exportAsCSV(rows){
+  if(!rows||!rows.length){ showToast(LANG==='th'?'ไม่มีข้อมูล':'No data'); return; }
+  const headers = Object.keys(rows[0]);
+  const csvLines = [headers.join(',')];
+  rows.forEach(r=>{
+    csvLines.push(headers.map(h=>{
+      const v = String(r[h]||'').replace(/"/g,'""');
+      return v.includes(',')||v.includes('"')||v.includes('\n') ? '"'+v+'"' : v;
+    }).join(','));
+  });
+  const blob = new Blob(['﻿'+csvLines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'CCH_Academy_Report_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click(); URL.revokeObjectURL(url);
+}
+
+</script>
+</body>
+</html>
